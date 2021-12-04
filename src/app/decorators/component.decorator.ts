@@ -20,10 +20,9 @@ export function Component(args: ComponentArguments) {
       (async () => {
         try {
           this.attachShadow({ mode: 'open' });
-          this.className = `${args.selector} ${this.className}`;
 
           await this.attachStyle(args.style);
-          await this.attachTemplate(args.template);
+          await this.attachTemplate(args.selector, args.template);
           await this.attachStyle('');
           this.loadIcons();
 
@@ -37,8 +36,9 @@ export function Component(args: ComponentArguments) {
       })();
     }
 
-    async attachTemplate(template: Promise<any> | string): Promise<void> {
+    async attachTemplate(selector: string, template: Promise<any> | string): Promise<void> {
       const rootElement = document.createElement('div');
+      rootElement.className = selector;
       rootElement.innerHTML = template instanceof Promise ? (await template).default : template;
       this.shadowRoot?.appendChild(rootElement);
     }

@@ -26,7 +26,7 @@ export class WallpaperComponent<T> implements OnInit {
     this.styleElement = this.shadowRoot.lastChild as HTMLStyleElement;
 
     this.photoService.photoSource.params.query = this.search;
-    this.photoService.photoSource.params.page = 9;
+    this.photoService.photoSource.params.page = Math.floor(Math.random() * 80);
     this.photoService.loadPhotos().then(data => {
       if (!data?.photos?.length) {
         this.photoService.clearCache();
