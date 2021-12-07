@@ -2,8 +2,12 @@
 
 import { OnInit } from '@interfaces/component.interface';
 import { ComponentArguments } from '@models/component-arguments.mode';
+import { ComponentElement } from '@models/component-element.model';
+import { ComponentInput } from '@models/component-input.model';
+import { BehaviourSubject } from '@reactive/behaviour-subject';
 import { Subject } from '@reactive/subject';
 import { SvgIconsService } from '@services/svg-icons.service';
+import { inputField } from './input.decorator';
 
 function isOnInit(arg: any): arg is OnInit {
   return typeof arg?.fcOnInit === 'function';
@@ -12,7 +16,9 @@ function isOnInit(arg: any): arg is OnInit {
 type Constructor<T> = new (...args: any[]) => T;
 
 export function Component(args: ComponentArguments) {
-  const htmlElementSubject = new Subject<any>();
+  const inputAttributes: string[] = [];
+  const inputSubject = new BehaviourSubject<ComponentInput>(undefined);
+  const htmlElementSubject = new Subject<ComponentElement>();
   const htmlElementClass = class extends HTMLElement {
     constructor() {
       super();
@@ -28,12 +34,31 @@ export function Component(args: ComponentArguments) {
 
           htmlElementSubject.next({
             shadowRoot: this.shadowRoot,
-            attributes: this.fetchAttributes()
           });
         } catch (error) {
           console.error(error);
         }
       })();
+    }
+
+    connectedCallback() {
+      undefined;
+    }
+
+    disconnectedCallback() {
+      undefined;
+    }
+
+    adoptedCallback() {
+      undefined;
+    }
+
+    attributeChangedCallback(attribute, oldValue, newValue) {
+      inputSubject.next({ attribute, oldValue, newValue });
+    }
+
+    static get observedAttributes() {
+      return inputAttributes;
     }
 
     async attachTemplate(selector: string, template: Promise<any> | string): Promise<void> {
@@ -53,16 +78,6 @@ export function Component(args: ComponentArguments) {
       }
     }
 
-    fetchAttributes(): { [key: string]: string | number | unknown } {
-      const attributes = {};
-
-      for (const attribute of this.attributes) {
-        attributes[attribute.nodeName] = attribute.nodeValue;
-      }
-
-      return attributes;
-    }
-
     loadIcons(): void {
       SvgIconsService.instance.loadIcons(this.shadowRoot?.children[1]);
     }
@@ -73,12 +88,29 @@ export function Component(args: ComponentArguments) {
       constructor(..._args: any[]) {
         super(..._args);
 
+        for (const attr of Object.keys(this[inputField] || {})) {
+          inputAttributes.push(attr);
+        }
+
         const htmlELementSub = htmlElementSubject.subscribe(data => {
           BaseClass.prototype.shadowRoot = data.shadowRoot;
 
-          for (const key of Object.keys(data.attributes)) {
-            BaseClass.prototype[key] = data.attributes[key];
-          }
+          inputSubject.subscribe(data => {
+            if (!data) {
+              return;
+            }
+
+            let value;
+
+            try {
+              value = JSON.parse(data.newValue);
+            } catch (error) {
+              value = data.newValue;
+            }
+
+            const property = this[inputField][data.attribute];
+            this[property] = value;
+          });
 
           if (isOnInit(this)) {
             this.fcOnInit();
