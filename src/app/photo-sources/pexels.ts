@@ -21,8 +21,13 @@ const pexelsPhotoSource = {
       photos.push({
         tinySize: () => `${photo.src.original}?auto=compress&cs=tinysrgb&&fit=crop&h=54&w=96`,
         largeSize: () => `${photo.src.original}?fit=crop&h=1080&w=1920`,
-        photographer: () => photo.photographer,
-        photographerUrl: () => photo.photographer_url,
+        photographer: () => {
+          return {
+            id: photo.photographer_id,
+            name: photo.photographer,
+            url: photo.photographer_url,
+          }
+        },
       });
     }
 

@@ -2,10 +2,6 @@
 @import "src/styles/shared";
 @import "src/styles/animations";
 
-$shadow-color: black;
-$shadow: 1px 1px 3px $shadow-color;
-$shadow-hover: 2px 2px 5px $shadow-color;
-
 %wllpaper-photo {
   background-color: transparent;
   background-position: center;
@@ -35,41 +31,13 @@ $shadow-hover: 2px 2px 5px $shadow-color;
     opacity: 0;
     z-index: 11;
   }
+}
 
-  .fc-wallpaper-photographer {
-    align-items: center;
-    display: flex;
-    font-size: $sp2;
-    font-weight: 500;
-    left: $sp4;
-    bottom: $sp4;
-    opacity: 0;
-    position: absolute;
-    transition: text-shadow 300ms ease-in;
-    z-index: 12;
-    color: rgb(177, 150, 0);
-
-    .icon {
-      svg {
-        transition: filter 300ms ease-in;
-      }
-    }
-
-    &:hover {
-      text-shadow: $shadow-hover;
-
-      .icon svg {
-        filter: drop-shadow($shadow-hover);
-      }
-    }
-
-    &,
-    &:active {
-      text-shadow: $shadow;
-
-      .icon svg {
-        filter: drop-shadow($shadow);
-      }
-    }
-  }
+.fc-wallpaper-paginator {
+  backdrop-filter: blur(0.5em);
+  bottom: 0;
+  margin: $sp4;
+  position: absolute;
+  width: calc(100% - #{$sp8});
+  z-index: 50;
 }

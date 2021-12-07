@@ -1,0 +1,50 @@
+@import "src/styles/variables";
+@import "src/styles/shared";
+@import "src/styles/animations";
+
+$shadow-color: black;
+$shadow: 1px 1px 3px $shadow-color;
+$shadow-hover: 2px 2px 5px $shadow-color;
+
+.fc-paginator {
+  background-color: black;
+  opacity: 0.7;
+  border-radius: $sp1;
+  box-shadow: 4px 4px 10px $shadow-color;
+  display: flex;
+  align-items: center;
+  padding: $sp2;
+
+  .fc-paginator-photographer {
+    align-items: center;
+    display: flex;
+    font-size: $sp2;
+    font-weight: 500;
+    transition: text-shadow 300ms ease-in;
+    z-index: 12;
+    color: white;
+
+    .icon {
+      svg {
+        transition: filter 300ms ease-in;
+      }
+    }
+
+    &:hover {
+      text-shadow: $shadow-hover;
+
+      .icon svg {
+        filter: drop-shadow($shadow-hover);
+      }
+    }
+
+    &,
+    &:active {
+      text-shadow: $shadow;
+
+      .icon svg {
+        filter: drop-shadow($shadow);
+      }
+    }
+  }
+}

@@ -1,4 +1,5 @@
 import { Component } from '@decorators/component.decorator';
+import { Input } from '@decorators/input.decorator';
 import { OnInit } from '@interfaces/component.interface';
 import { Photo } from '@models/photo.model';
 import { PhotoService } from '@services/photo.service';
@@ -10,23 +11,30 @@ import { PhotoService } from '@services/photo.service';
   style: import('./wallpaper.component.scss')
 })
 export class WallpaperComponent<T> implements OnInit {
-  search: string;
+  private myStyleElement: HTMLStyleElement;
+  private myPaginatorElement: HTMLElement;
+
   shadowRoot: ShadowRoot;
-  photographerElement: HTMLAnchorElement;
-  photographerNameElement: HTMLSpanElement;
-  styleElement: HTMLStyleElement;
 
-  constructor(private photoService: PhotoService<T>) {
+  get styleElement(): HTMLStyleElement {
+    this.myStyleElement ??= this.shadowRoot.lastChild as HTMLStyleElement;
 
+    return this.myStyleElement;
   }
 
-  fcOnInit(): void {
-    this.photographerElement = this.shadowRoot.getElementById('fcWallpaperPhotographer') as HTMLAnchorElement;
-    this.photographerNameElement = this.photographerElement?.getElementsByClassName('fc-wallpaper-photographer-name')[0] as HTMLSpanElement;
-    this.styleElement = this.shadowRoot.lastChild as HTMLStyleElement;
+  get paginatorElement(): HTMLElement {
+    this.myPaginatorElement ??= this.shadowRoot
+      .getElementById('fcWallpaperPaginator') as HTMLElement;
 
-    this.photoService.photoSource.params.query = this.search;
-    this.photoService.photoSource.params.page = Math.floor(Math.random() * 80);
+    return this.myPaginatorElement;
+  }
+
+  @Input()
+  set search(query: string) {
+    this.photoService.photoSource.params.query = query;
+    this.photoService.photoSource.params.page = 10;
+    // this.photoService.photoSource.params.page = Math.floor(Math.random() * 80);
+
     this.photoService.loadPhotos().then(data => {
       if (!data?.photos?.length) {
         this.photoService.clearCache();
@@ -34,8 +42,16 @@ export class WallpaperComponent<T> implements OnInit {
       }
 
       const photo = data.photos[((max) => Math.floor(Math.random() * max))(data.photos.length)];
+      this.paginatorElement.setAttribute('photographer', JSON.stringify(photo.photographer()));
       this.updateBackground(photo);
     });
+  }
+
+  constructor(private photoService: PhotoService<T>) {
+  }
+
+  fcOnInit(): void {
+    undefined;
   }
 
   updateBackground(photo: Photo): void {
@@ -48,15 +64,7 @@ export class WallpaperComponent<T> implements OnInit {
         background-image: url(${photo.largeSize()});
         animation: fadeInAnimation 2s forwards ease-in;
       }
-
-      .fc-wallpaper-photo .fc-wallpaper-photographer {
-        animation: fadeInAnimation 2s forwards ease-in;
-      }
     `;
-
-    this.photographerElement.href = photo.photographerUrl();
-    this.photographerNameElement.innerText = photo.photographer();
-    this.photographerNameElement.title = `Photographer: ${photo.photographer()}`;
   }
 }
 
