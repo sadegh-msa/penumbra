@@ -16,8 +16,11 @@ const pexelsPhotoSource = {
   },
   extractPhotos: (response) => {
     const photos: Photo[] = [];
+    const responsePhotosLength = response.photos.length;
 
-    for (const photo of response.photos) {
+    for (let i = 0; i < responsePhotosLength; i++) {
+      const photo = response.photos[i];
+
       photos.push({
         tinySize: () => `${photo.src.original}?auto=compress&cs=tinysrgb&&fit=crop&h=54&w=96`,
         largeSize: () => `${photo.src.original}?fit=crop&h=1080&w=1920`,
@@ -26,7 +29,7 @@ const pexelsPhotoSource = {
             id: photo.photographer_id,
             name: photo.photographer,
             url: photo.photographer_url,
-          }
+          };
         },
       });
     }

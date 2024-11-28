@@ -81,18 +81,21 @@ export function Component(args: ComponentArguments) {
     loadIcons(): void {
       SvgIconsService.instance.loadIcons(this.shadowRoot?.children[1]);
     }
-  }
+  };
 
   return function <T extends Constructor<any>>(BaseClass: T) {
     return class extends BaseClass {
       constructor(..._args: any[]) {
         super(..._args);
 
-        for (const attr of Object.keys(this[inputField] || {})) {
-          inputAttributes.push(attr);
+        const attrs = Object.keys(this[inputField] || {});
+        const attrsLength = attrs.length;
+
+        for (let i = 0; i < attrsLength; i++) {
+          inputAttributes.push(attrs[i]);
         }
 
-        const htmlELementSub = htmlElementSubject.subscribe(data => {
+        const htmlElementSub = htmlElementSubject.subscribe(data => {
           BaseClass.prototype.shadowRoot = data.shadowRoot;
 
           inputSubject.subscribe(data => {
@@ -116,11 +119,11 @@ export function Component(args: ComponentArguments) {
             this.fcOnInit();
           }
 
-          htmlElementSubject.unsubscribe(htmlELementSub);
+          htmlElementSubject.unsubscribe(htmlElementSub);
         });
 
         customElements.define(args.selector, htmlElementClass);
       }
-    }
+    };
   };
 }

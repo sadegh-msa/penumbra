@@ -1,33 +1,37 @@
-import { cloneDeep } from 'lodash-es';
+import { Observer } from '@models/reactive.model';
 
 export class BehaviourSubject<T> {
-  protected myValue: T | unknown;
-  protected readonly subscribers = new Map();
+  readonly #subscribers = new Map<symbol, Observer>();
+  #value: T | unknown;
 
   constructor(value: T | unknown) {
-    this.myValue = value;
+    this.#value = value;
   }
 
-  get value(): T | unknown {
-    return this.myValue;
+  get value() {
+    return this.#value;
   }
 
-  subscribe(func: (...args) => void): symbol {
+  subscribe(observer: Observer) {
     const key = Symbol();
-    this.subscribers.set(key, func);
-    this.subscribers.get(key)(this.myValue);
+    this.#subscribers.set(key, observer);
+    observer(this.#value);
+
     return key;
   }
 
-  unsubscribe(key: symbol): boolean {
-    return this.subscribers.delete(key);
+  unsubscribe(key: symbol) {
+    return this.#subscribers.delete(key);
   }
 
-  next(value: T | unknown): void {
-    this.myValue = cloneDeep(value);
+  next(value: T | unknown) {
+    const iterator = this.#subscribers.values();
+    this.#value = value;
 
-    for (const subscriber of this.subscribers.values()) {
-      subscriber(this.myValue);
+    let observer = iterator.next().value;
+    while (observer) {
+      observer(this.#value);
+      observer = iterator.next().value;
     }
   }
 }

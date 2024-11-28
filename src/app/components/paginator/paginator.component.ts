@@ -10,33 +10,34 @@ import { Photographer } from '@models/photographer.model';
   style: import('./paginator.component.scss')
 })
 export class PaginatorComponent implements OnInit {
-  private myPhotographer: Photographer;
-  private myPhotographerElement: HTMLAnchorElement;
-  private myPhotographerNameElement: HTMLSpanElement;
+  #photographer: Photographer;
+  #photographerElement: HTMLAnchorElement;
+  #photographerNameElement: HTMLSpanElement;
 
   shadowRoot: ShadowRoot;
 
-  get photographerElement(): HTMLAnchorElement {
-    this.myPhotographerElement ??= this.shadowRoot
+  get photographerElement() {
+    this.#photographerElement ??= this.shadowRoot
       .getElementById('fcPaginatorPhotographer') as HTMLAnchorElement;
 
-    return this.myPhotographerElement;
+    return this.#photographerElement;
   }
 
-  get photographerNameElement(): HTMLSpanElement {
-      this.myPhotographerNameElement ??= this.photographerElement
-        ?.getElementsByClassName('fc-paginator-photographer-name')[0] as HTMLSpanElement;
+  get photographerNameElement() {
+    this.#photographerNameElement ??= this.photographerElement
+      ?.getElementsByClassName('fc-paginator-photographer-name')[0] as HTMLSpanElement;
 
-    return this.myPhotographerNameElement;
+    return this.#photographerNameElement;
   }
 
   @Input()
   set photographer(photographer: Photographer) {
-    this.myPhotographer = photographer;
+    this.#photographer = photographer;
     this.updatePhotographer();
   }
-  get photographer(): Photographer {
-    return this.myPhotographer;
+
+  get photographer() {
+    return this.#photographer;
   }
 
   constructor() {
@@ -47,7 +48,7 @@ export class PaginatorComponent implements OnInit {
     undefined;
   }
 
-  updatePhotographer(): void {
+  updatePhotographer() {
     this.photographerElement.href = this.photographer.url;
     this.photographerNameElement.innerText = this.photographer.name;
     this.photographerNameElement.title = `Photographer: ${this.photographer.name}`;

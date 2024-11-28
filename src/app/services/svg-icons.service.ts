@@ -1,19 +1,20 @@
-let instance;
+let instance: SvgIconsService;
+
 export class SvgIconsService {
-  protected readonly icons = new Map<string, Promise<string>>();
+  readonly #icons = new Map<string, Promise<string>>();
 
-  static get instance(): SvgIconsService {
-    if (!instance) {
-      instance = new SvgIconsService();
-    }
-
-    return instance;
+  static get instance() {
+    return instance || (instance = new SvgIconsService());
   }
 
   async registerIcons(icons: Map<string, string>): Promise<void> {
     try {
-      for (const [icon, url] of icons) {
-        this.icons.set(icon, fetch(url).then(r => r.text()));
+      const iterator = icons.entries();
+      let [icon, url] = iterator.next().value;
+
+      while (icon) {
+        this.#icons.set(icon, fetch(url).then(r => r.text()));
+        [icon, url] = iterator.next().value;
       }
     } catch (error) {
       console.error(error);
@@ -26,13 +27,22 @@ export class SvgIconsService {
     }
 
     try {
-      for (const icon of this.icons.keys()) {
-        const elements = dom.getElementsByClassName(`icon ${icon}`);
-        const svg = await this.icons.get(icon);
+      const iterator = this.#icons.entries();
+      let [icon, request] = iterator.next().value;
 
-        for (const element of elements) {
-          element.innerHTML = svg || '';
+      while (icon) {
+        const elements = dom.getElementsByClassName(`icon ${icon}`);
+        const elementsLength = elements.length;
+
+        if (elementsLength) {
+          const svg = await request;
+
+          for (let i = 0; i < elementsLength; i++) {
+            elements[i].innerHTML = svg || '';
+          }
         }
+
+        [icon, request] = iterator.next().value;
       }
     } catch (error) {
       console.error(error);

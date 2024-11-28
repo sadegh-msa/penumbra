@@ -8,10 +8,9 @@ export class PhotoService<T> {
   readonly CACHE_TIME_DURATION = 30; // Minutes
 
   constructor(public photoSource: PhotoSource<T>) {
-
   }
 
-  writeToCache(data: PhotoSourceCache<T>): void {
+  writeToCache(data: PhotoSourceCache<T>) {
     localStorage.setItem(this.CACHE_KEY, JSON.stringify(data));
   }
 
@@ -20,11 +19,11 @@ export class PhotoService<T> {
     return data ? JSON.parse(data) : null;
   }
 
-  clearCache(): void {
+  clearCache() {
     localStorage.removeItem(this.CACHE_KEY);
   }
 
-  updateState(response: T): void {
+  updateState(response: T) {
     this.writeToCache({
       photoSource: this.photoSource,
       response: response,
@@ -64,8 +63,11 @@ export class PhotoService<T> {
     const queryString = UrlHelper.convertToQueryString(this.photoSource.params);
     const request = new Request(`${this.photoSource.url}?${queryString}`);
     const headers = new Headers();
+    const photoHeaders = Object.keys(this.photoSource.headers);
+    const photoHeadersLength = photoHeaders.length;
 
-    for (const header of Object.keys(this.photoSource.headers)) {
+    for (let i = 0; i < photoHeadersLength; i++) {
+      const header = photoHeaders[i];
       headers.append(header, this.photoSource.headers[header]);
     }
 

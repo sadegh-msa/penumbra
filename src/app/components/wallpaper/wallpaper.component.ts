@@ -11,33 +11,34 @@ import { PhotoService } from '@services/photo.service';
   style: import('./wallpaper.component.scss')
 })
 export class WallpaperComponent<T> implements OnInit {
-  private myStyleElement: HTMLStyleElement;
-  private myPaginatorElement: HTMLElement;
+  #styleElement: HTMLStyleElement;
+  #paginatorElement: HTMLElement;
+  #photoService: PhotoService<T>;
 
   shadowRoot: ShadowRoot;
 
-  get styleElement(): HTMLStyleElement {
-    this.myStyleElement ??= this.shadowRoot.lastChild as HTMLStyleElement;
+  get styleElement() {
+    this.#styleElement ??= this.shadowRoot.lastChild as HTMLStyleElement;
 
-    return this.myStyleElement;
+    return this.#styleElement;
   }
 
-  get paginatorElement(): HTMLElement {
-    this.myPaginatorElement ??= this.shadowRoot
+  get paginatorElement() {
+    this.#paginatorElement ??= this.shadowRoot
       .getElementById('fcWallpaperPaginator') as HTMLElement;
 
-    return this.myPaginatorElement;
+    return this.#paginatorElement;
   }
 
   @Input()
   set search(query: string) {
-    this.photoService.photoSource.params.query = query;
-    this.photoService.photoSource.params.page = 10;
+    this.#photoService.photoSource.params.query = query;
+    this.#photoService.photoSource.params.page = 10;
     // this.photoService.photoSource.params.page = Math.floor(Math.random() * 80);
 
-    this.photoService.loadPhotos().then(data => {
+    this.#photoService.loadPhotos().then(data => {
       if (!data?.photos?.length) {
-        this.photoService.clearCache();
+        this.#photoService.clearCache();
         return;
       }
 
@@ -47,14 +48,15 @@ export class WallpaperComponent<T> implements OnInit {
     });
   }
 
-  constructor(private photoService: PhotoService<T>) {
+  constructor(photoService: PhotoService<T>) {
+    this.#photoService = photoService;
   }
 
   fcOnInit(): void {
     undefined;
   }
 
-  updateBackground(photo: Photo): void {
+  updateBackground(photo: Photo) {
     this.styleElement.innerHTML = `
       .fc-wallpaper-photo {
         background-image: url(${photo.tinySize()});
