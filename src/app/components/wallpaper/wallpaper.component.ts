@@ -62,7 +62,7 @@ export class WallpaperComponent<T> implements OnInit {
 
       .fc-wallpaper-photo::after {
         background-image: url(${photo.largeSize()});
-        animation: fadeInAnimation 2s forwards ease-in;
+        opacity: 1;
       }
     `;
   }

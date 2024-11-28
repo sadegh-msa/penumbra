@@ -1,6 +1,5 @@
-@import "src/styles/variables";
-@import "src/styles/shared";
-@import "src/styles/animations";
+@use "src/styles/variables" as *;
+@use "src/styles/common";
 
 $shadow-color: black;
 $shadow: 1px 1px 3px $shadow-color;

@@ -1,8 +1,7 @@
-@import "src/styles/variables";
-@import "src/styles/shared";
-@import "src/styles/animations";
+@use "src/styles/variables" as *;
+@use "src/styles/common";
 
-%wllpaper-photo {
+%wallpaper-photo {
   background-color: transparent;
   background-position: center;
   background-repeat: no-repeat;
@@ -16,20 +15,21 @@
 }
 
 .fc-wallpaper-photo {
-  @extend %wllpaper-photo;
+  @extend %wallpaper-photo;
 
   &::before {
-    @extend %wllpaper-photo;
+    @extend %wallpaper-photo;
     content: "";
     backdrop-filter: blur(2em);
     z-index: 10;
   }
 
   &::after {
-    @extend %wllpaper-photo;
+    @extend %wallpaper-photo;
     content: "";
     opacity: 0;
     z-index: 11;
+    transition: opacity 3s linear;
   }
 }
 
