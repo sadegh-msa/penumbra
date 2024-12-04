@@ -37,6 +37,8 @@
     "target": "es6",
     "types": ["node", "jest"]
   },
-  "exclude": ["node_modules", "**/*.test.ts", "src/assets"],
+  "exclude": ["node_modules", "**/*.test.ts",
+    "src/public"
+  ],
   "include": ["src/**/*.ts"]
 }

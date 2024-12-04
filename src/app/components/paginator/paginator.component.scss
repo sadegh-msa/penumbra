@@ -1,13 +1,13 @@
-@use "src/styles/variables" as *;
-@use "src/styles/common";
+@use 'src/styles/variables' as *;
+@use 'src/styles/common';
 
 $shadow-color: black;
 $shadow: 1px 1px 3px $shadow-color;
 $shadow-hover: 2px 2px 5px $shadow-color;
 
-.fc-paginator {
+:host {
   background-color: black;
-  opacity: 0.7;
+  opacity: 0.5;
   border-radius: $sp1;
   box-shadow: 4px 4px 10px $shadow-color;
   display: flex;
@@ -15,24 +15,26 @@ $shadow-hover: 2px 2px 5px $shadow-color;
   padding: $sp2;
 
   .fc-paginator-photographer {
-    align-items: center;
     display: flex;
+    align-items: center;
     font-size: $sp2;
     font-weight: 500;
     transition: text-shadow 300ms ease-in;
     z-index: 12;
     color: white;
+    gap: $sp1;
 
-    .icon {
-      svg {
-        transition: filter 300ms ease-in;
+      fc-icon {
+        &::part(svg) {
+          transition: filter 300ms ease-in;
+          fill: white;
+        }
       }
-    }
 
     &:hover {
       text-shadow: $shadow-hover;
 
-      .icon svg {
+      fc-icon svg {
         filter: drop-shadow($shadow-hover);
       }
     }
@@ -41,7 +43,7 @@ $shadow-hover: 2px 2px 5px $shadow-color;
     &:active {
       text-shadow: $shadow;
 
-      .icon svg {
+      fc-icon svg {
         filter: drop-shadow($shadow);
       }
     }

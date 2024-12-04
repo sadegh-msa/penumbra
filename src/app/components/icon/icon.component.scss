@@ -1,0 +1,23 @@
+@use '../../../styles/variables' as *;
+
+:host {
+  display: block;
+  height: $sp3;
+  width: $sp3;
+  margin: 0;
+  padding: 0;
+
+  svg {
+    height: $sp3;
+    width: $sp3;
+
+    > *{
+      &[fill] {
+        fill: inherit;
+      }
+      &[stroke] {
+        stroke: inherit;
+      }
+    }
+  }
+}

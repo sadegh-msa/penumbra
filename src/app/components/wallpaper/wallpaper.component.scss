@@ -1,43 +1,45 @@
-@use "src/styles/variables" as *;
-@use "src/styles/common";
+@use 'src/styles/variables' as *;
+@use 'src/styles/common';
 
 %wallpaper-photo {
   background-color: transparent;
   background-position: center;
   background-repeat: no-repeat;
   background-size: cover;
-  min-height: 100vh;
-  min-width: 100vw;
+  min-height: 100dvh;
+  min-width: 100dvw;
   position: absolute;
   left: 0;
   top: 0;
   overflow: hidden;
 }
 
-.fc-wallpaper-photo {
-  @extend %wallpaper-photo;
+:host {
+  display: flex;
+  justify-content: center;
 
-  &::before {
-    @extend %wallpaper-photo;
-    content: "";
-    backdrop-filter: blur(2em);
-    z-index: 10;
+  .fc-wallpaper-photo {
+    &::before {
+      @extend %wallpaper-photo;
+      content: '';
+      z-index: 10;
+    }
+
+    &::after {
+      @extend %wallpaper-photo;
+      content: '';
+      z-index: 11;
+      backdrop-filter: blur(2em);
+      transition: background-image 3s linear;
+    }
   }
 
-  &::after {
-    @extend %wallpaper-photo;
-    content: "";
-    opacity: 0;
-    z-index: 11;
-    transition: opacity 3s linear;
+  fc-paginator {
+    backdrop-filter: blur(0.5em);
+    bottom: 0;
+    margin: $sp4 auto;
+    position: absolute;
+    width: calc(100% - #{$sp10});
+    z-index: 50;
   }
-}
-
-.fc-wallpaper-paginator {
-  backdrop-filter: blur(0.5em);
-  bottom: 0;
-  margin: $sp4;
-  position: absolute;
-  width: calc(100% - #{$sp8});
-  z-index: 50;
 }

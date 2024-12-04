@@ -58,13 +58,14 @@ export class WallpaperComponent<T> implements OnInit {
 
   updateBackground(photo: Photo) {
     this.styleElement.innerHTML = `
-      .fc-wallpaper-photo {
-        background-image: url(${photo.tinySize()});
-      }
+      :host {
+        .fc-wallpaper-photo::before {
+          background-image: url(${photo.tinySize()});
+        }
 
-      .fc-wallpaper-photo::after {
-        background-image: url(${photo.largeSize()});
-        opacity: 1;
+        .fc-wallpaper-photo::after {
+          background-image: url(${photo.largeSize()});
+        }
       }
     `;
   }

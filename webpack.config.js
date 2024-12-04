@@ -79,7 +79,7 @@ const config = {
     }),
     new CopyPlugin({
       patterns: [
-        { from: 'src/assets', to: 'assets', noErrorOnMissing: true },
+        { from: 'src/public', to: '', noErrorOnMissing: true },
       ],
     }),
   ],

@@ -6,7 +6,6 @@ import { ComponentElement } from '@models/component-element.model';
 import { ComponentInput } from '@models/component-input.model';
 import { BehaviourSubject } from '@reactive/behaviour-subject';
 import { Subject } from '@reactive/subject';
-import { SvgIconsService } from '@services/svg-icons.service';
 import { inputField } from './input.decorator';
 
 function isOnInit(arg: any): arg is OnInit {
@@ -27,10 +26,14 @@ export function Component(args: ComponentArguments) {
         try {
           this.attachShadow({ mode: 'open' });
 
-          await this.attachStyle(args.style);
-          await this.attachTemplate(args.selector, args.template);
+          if (args.template) {
+            await this.attachTemplate(args.template);
+          }
+
+          if (args.style) {
+            await this.attachStyle(args.style);
+          }
           await this.attachStyle('');
-          this.loadIcons();
 
           htmlElementSubject.next({
             shadowRoot: this.shadowRoot,
@@ -61,11 +64,15 @@ export function Component(args: ComponentArguments) {
       return inputAttributes;
     }
 
-    async attachTemplate(selector: string, template: Promise<any> | string): Promise<void> {
-      const rootElement = document.createElement('div');
-      rootElement.className = selector;
-      rootElement.innerHTML = template instanceof Promise ? (await template).default : template;
-      this.shadowRoot?.appendChild(rootElement);
+    async attachTemplate(template: Promise<any> | string): Promise<void> {
+      const wrapperElement = document.createElement('div');
+      wrapperElement.innerHTML = template instanceof Promise ? (await template).default : template;
+
+      const fragment = document.createDocumentFragment();
+      for (let i = 0; i < wrapperElement.childNodes.length; ++i) {
+        fragment.appendChild(wrapperElement.childNodes[i]);
+      }
+      this.shadowRoot?.appendChild(fragment);
     }
 
     async attachStyle(style: Promise<any> | string): Promise<void> {
@@ -76,10 +83,6 @@ export function Component(args: ComponentArguments) {
         styleElement.textContent = style;
         this.shadowRoot?.appendChild(styleElement);
       }
-    }
-
-    loadIcons(): void {
-      SvgIconsService.instance.loadIcons(this.shadowRoot?.children[1]);
     }
   };
 
