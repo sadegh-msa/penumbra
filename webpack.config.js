@@ -1,9 +1,9 @@
-/* eslint-disable @typescript-eslint/no-var-requires */
 /* eslint-disable no-undef */
+/* eslint-disable @typescript-eslint/no-require-imports */
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyPlugin = require('copy-webpack-plugin');
-const { CleanWebpackPlugin } = require('clean-webpack-plugin');
+const {CleanWebpackPlugin} = require('clean-webpack-plugin');
 const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 const config = {
@@ -25,31 +25,35 @@ const config = {
       {
         test: /\.html$/,
         exclude: /node_modules/,
-        use: { loader: 'html-loader' }
+        use: {loader: 'html-loader'}
       },
       {
         test: /\.s[ac]ss$/i,
         include: /src/,
         use: [
           {
-            loader: "style-loader",
+            loader: 'style-loader',
             options: {
-              injectType: "lazyStyleTag",
-              insert: function insertIntoTarget(element, options) {
-                var parent = options.target || document.head;
-
-                parent.appendChild(element);
-              },
+              injectType: 'lazyStyleTag',
+              insert: require.resolve('./style-loader-insert'),
             },
           },
-          "css-loader",
-          "sass-loader",
+          'css-loader',
           {
-            loader: "postcss-loader",
+            loader: 'sass-loader',
+            options: {
+              api: "modern-compiler",
+              sassOptions: {
+                loadPaths: [path.resolve(__dirname)]
+              }
+            }
+          },
+          {
+            loader: 'postcss-loader',
             options: {
               postcssOptions: {
                 plugins: [
-                  ["postcss-preset-env", "autoprefixer"],
+                  ['postcss-preset-env', 'autoprefixer'],
                 ],
               },
             },
@@ -79,7 +83,7 @@ const config = {
     }),
     new CopyPlugin({
       patterns: [
-        { from: 'src/public', to: '', noErrorOnMissing: true },
+        {from: 'src/public', to: '', noErrorOnMissing: true},
       ],
     }),
   ],
