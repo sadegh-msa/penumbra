@@ -8,8 +8,12 @@
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
-    "lib": ["esnext", "dom", "dom.iterable"],
-    "module": "esnext",
+    "lib": [
+      "es2022",
+      "dom",
+      "dom.iterable"
+    ],
+    "module": "es2022",
     "moduleResolution": "node",
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": false,
@@ -34,11 +38,18 @@
     "strictFunctionTypes": true,
     "strictNullChecks": true,
     "strictPropertyInitialization": false,
-    "target": "es6",
-    "types": ["node", "jest"]
+    "target": "es2022",
+    "types": [
+      "node",
+      "jest",
+    ]
   },
-  "exclude": ["node_modules", "**/*.test.ts",
+  "exclude": [
+    "node_modules",
+    "**/*.test.ts",
     "src/public"
   ],
-  "include": ["src/**/*.ts"]
+  "include": [
+    "src/**/*.ts"
+  ]
 }

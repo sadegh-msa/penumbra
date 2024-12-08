@@ -18,7 +18,7 @@ export function Component(args: ComponentArguments) {
   const inputAttributes: string[] = [];
   const inputSubject = new BehaviourSubject<ComponentInput>(undefined);
   const htmlElementSubject = new Subject<ComponentElement>();
-  const htmlElementClass = class extends HTMLElement {
+  const HtmlElementClass = class extends HTMLElement {
     constructor() {
       super();
 
@@ -76,13 +76,9 @@ export function Component(args: ComponentArguments) {
     }
 
     async attachStyle(style: Promise<any> | string): Promise<void> {
-      if (style instanceof Promise) {
-        (await style).default.use({ target: this.shadowRoot });
-      } else {
-        const styleElement = document.createElement('style');
-        styleElement.textContent = style;
-        this.shadowRoot?.appendChild(styleElement);
-      }
+      const styleElement = document.createElement('style');
+      styleElement.textContent = style instanceof Promise ? (await style).default : style;
+      this.shadowRoot?.appendChild(styleElement);
     }
   };
 
@@ -125,7 +121,7 @@ export function Component(args: ComponentArguments) {
           htmlElementSubject.unsubscribe(htmlElementSub);
         });
 
-        customElements.define(args.selector, htmlElementClass);
+        customElements.define(args.selector, HtmlElementClass);
       }
     };
   };

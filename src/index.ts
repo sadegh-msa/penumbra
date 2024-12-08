@@ -1,21 +1,14 @@
-import { AppComponent } from '@app/app.component';
-import { pexelsPhotoSource } from '@app/photo-sources/pexels';
-import { IconComponent } from '@components/icon/icon.component';
-import { PaginatorComponent } from '@components/paginator/paginator.component';
-import { WallpaperComponent } from '@components/wallpaper/wallpaper.component';
 import { PexelsResponse } from '@models/pexels-response.model';
-import { PhotoService } from '@services/photo.service';
-
+import './styles/main.scss';
 
 (async () => {
   try {
-    const styles = (await import('./styles.scss')).default;
-    styles.use({ target: document.getElementsByTagName('head')[0] });
-
-    new IconComponent();
-    new PaginatorComponent();
-    new WallpaperComponent<PexelsResponse>(new PhotoService<PexelsResponse>(pexelsPhotoSource));
-    new AppComponent();
+    new (await import('@components/icon/icon.component')).IconComponent();
+    new (await import('@components/paginator/paginator.component')).PaginatorComponent();
+    const { pexelsPhotoSource } = (await import('@app/photo-sources/pexels'));
+    const photoService = new (await import('@services/photo.service')).PhotoService<PexelsResponse>(pexelsPhotoSource);
+    new (await import('@components/wallpaper/wallpaper.component')).WallpaperComponent<PexelsResponse>(photoService);
+    new (await import('@app/app.component')).AppComponent;
   } catch (error) {
     console.error(error);
   }

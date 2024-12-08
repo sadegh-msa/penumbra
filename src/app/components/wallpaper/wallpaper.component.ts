@@ -3,19 +3,21 @@ import { Input } from '@decorators/input.decorator';
 import { OnInit } from '@interfaces/component.interface';
 import { Photo } from '@models/photo.model';
 import { PhotoService } from '@services/photo.service';
+import template from './wallpaper.component.html?raw';
+import style from './wallpaper.component.scss?inline';
 
 
 @Component({
   selector: 'fc-wallpaper',
-  template: import('./wallpaper.component.html'),
-  style: import('./wallpaper.component.scss')
+  template,
+  style
 })
 export class WallpaperComponent<T> implements OnInit {
   #styleElement: HTMLStyleElement;
   #paginatorElement: HTMLElement;
   #photoService: PhotoService<T>;
 
-  shadowRoot: ShadowRoot;
+  declare shadowRoot: ShadowRoot;
 
   get styleElement() {
     this.#styleElement ??= this.shadowRoot.lastChild as HTMLStyleElement;

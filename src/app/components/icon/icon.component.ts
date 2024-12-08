@@ -1,14 +1,15 @@
 import { Component } from '@decorators/component.decorator';
 import { Input } from '@decorators/input.decorator';
 import { OnInit } from '@interfaces/component.interface';
+import style from './icon.component.scss?inline';
 
 
 @Component({
   selector: 'fc-icon',
-  style: import('./icon.component.scss')
+  style
 })
 export class IconComponent implements OnInit {
-  shadowRoot: ShadowRoot;
+  declare shadowRoot: ShadowRoot;
 
   @Input()
   set icon(icon: string) {
