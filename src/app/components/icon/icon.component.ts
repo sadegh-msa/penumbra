@@ -1,18 +1,22 @@
 import { Component } from '@decorators/component.decorator';
-import { Input } from '@decorators/input.decorator';
-import { OnInit } from '@interfaces/component.interface';
+import { Input } from '@decorators/component-input.decorator';
+import { ComponentEssentials } from '@models/component.model';
 import style from './icon.component.scss?inline';
 
 
 @Component({
-  selector: 'fc-icon',
+  selector: 'pen-icon',
   style
 })
-export class IconComponent implements OnInit {
+export class IconComponent implements ComponentEssentials {
   declare shadowRoot: ShadowRoot;
 
   @Input()
   set icon(icon: string) {
+    if ([...this.shadowRoot.childNodes].map(i => i.nodeName).includes('svg')) {
+      return;
+    }
+
     fetch(this.getIconUrl(icon)).then(response => {
       (async () => {
         const wrapperElement = document.createElement('div');
@@ -27,8 +31,7 @@ export class IconComponent implements OnInit {
     });
   }
 
-  fcOnInit() {
-    undefined;
+  onInit() {
   }
 
   getIconUrl(icon: string) {

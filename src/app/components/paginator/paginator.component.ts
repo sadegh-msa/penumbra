@@ -1,60 +1,30 @@
 import { Component } from '@decorators/component.decorator';
-import { Input } from '@decorators/input.decorator';
-import { OnInit } from '@interfaces/component.interface';
+import { Input } from '@decorators/component-input.decorator';
+import { ComponentEssentials } from '@models/component.model';
 import { Photographer } from '@models/photographer.model';
-import template from './paginator.component.html?raw';
-import style from './paginator.component.scss?inline';
-
+import style from './paginator.style.scss?inline';
+import template from './paginator.template';
 
 @Component({
-  selector: 'fc-paginator',
+  selector: 'pen-paginator',
   template,
   style
 })
-export class PaginatorComponent implements OnInit {
+export class PaginatorComponent implements ComponentEssentials {
   #photographer: Photographer;
-  #photographerElement: HTMLAnchorElement;
-  #photographerNameElement: HTMLSpanElement;
 
   declare shadowRoot: ShadowRoot;
-
-  get photographerElement() {
-    this.#photographerElement ??= this.shadowRoot
-      .getElementById('fcPaginatorPhotographer') as HTMLAnchorElement;
-
-    return this.#photographerElement;
-  }
-
-  get photographerNameElement() {
-    this.#photographerNameElement ??= this.photographerElement
-      ?.getElementsByClassName('fc-paginator-photographer-name')[0] as HTMLSpanElement;
-
-    return this.#photographerNameElement;
-  }
 
   @Input()
   set photographer(photographer: Photographer) {
     this.#photographer = photographer;
-    this.updatePhotographer();
   }
 
   get photographer() {
     return this.#photographer;
   }
 
-  constructor() {
-    undefined;
+  onInit() {
   }
-
-  fcOnInit(): void {
-    undefined;
-  }
-
-  updatePhotographer() {
-    this.photographerElement.href = this.photographer.url;
-    this.photographerNameElement.innerText = this.photographer.name;
-    this.photographerNameElement.title = `Photographer: ${this.photographer.name}`;
-  }
-
 }
 

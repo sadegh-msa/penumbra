@@ -8,7 +8,7 @@ import './styles/main.scss';
     const { pexelsPhotoSource } = (await import('@app/photo-sources/pexels'));
     const photoService = new (await import('@services/photo.service')).PhotoService<PexelsResponse>(pexelsPhotoSource);
     new (await import('@components/wallpaper/wallpaper.component')).WallpaperComponent<PexelsResponse>(photoService);
-    new (await import('@app/app.component')).AppComponent;
+    new (await import('@components/app/app.component')).AppComponent;
   } catch (error) {
     console.error(error);
   }

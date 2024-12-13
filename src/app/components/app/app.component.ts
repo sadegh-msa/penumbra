@@ -1,9 +1,9 @@
 import { Component } from '@decorators/component.decorator';
-import template from './app.component.html?raw';
-import style from './app.component.scss?inline';
+import template from './app.template';
+import style from './app.style.scss?inline';
 
 @Component({
-  selector: 'fc-app',
+  selector: 'pen-app',
   template,
   style
 })

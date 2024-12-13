@@ -1,18 +1,31 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-import { OnInit } from '@interfaces/component.interface';
-import { ComponentArguments } from '@models/component-arguments.mode';
-import { ComponentElement } from '@models/component-element.model';
-import { ComponentInput } from '@models/component-input.model';
+import { ComponentArguments, ComponentElement, ComponentEssentials, ComponentInput } from '@models/component.model';
 import { BehaviourSubject } from '@reactive/behaviour-subject';
 import { Subject } from '@reactive/subject';
-import { inputField } from './input.decorator';
-
-function isOnInit(arg: any): arg is OnInit {
-  return typeof arg?.fcOnInit === 'function';
-}
+import { inputField } from './component-input.decorator';
 
 type Constructor<T> = new (...args: any[]) => T;
+
+function hasOnInit(arg: any): arg is ComponentEssentials {
+  return typeof arg?.onInit === 'function';
+}
+
+function attachTemplate(shadowRoot: ShadowRoot, template: string) {
+  const wrapperElement = document.createElement('div');
+  wrapperElement.innerHTML = template.trim();
+  const fragment = document.createDocumentFragment();
+  for (let i = 0; i < wrapperElement.childNodes.length; ++i) {
+    fragment.appendChild(wrapperElement.childNodes[i]);
+  }
+  shadowRoot.appendChild(fragment);
+}
+
+function attachStyle(shadowRoot: ShadowRoot, style: string) {
+  const styleElement = document.createElement('style');
+  styleElement.innerText = style.trim();
+  shadowRoot.appendChild(styleElement);
+}
 
 export function Component(args: ComponentArguments) {
   const inputAttributes: string[] = [];
@@ -22,68 +35,36 @@ export function Component(args: ComponentArguments) {
     constructor() {
       super();
 
-      (async () => {
-        try {
-          this.attachShadow({ mode: 'open' });
+      const internals = this.attachInternals()
 
-          if (args.template) {
-            await this.attachTemplate(args.template);
-          }
-
-          if (args.style) {
-            await this.attachStyle(args.style);
-          }
-          await this.attachStyle('');
-
-          htmlElementSubject.next({
-            shadowRoot: this.shadowRoot,
-          });
-        } catch (error) {
-          console.error(error);
-        }
-      })();
+      if (!internals.shadowRoot) {
+        this.attachShadow({ mode: 'open' });
+      }
     }
 
     connectedCallback() {
-      undefined;
+      htmlElementSubject.next({ htmlElement: this });
     }
 
     disconnectedCallback() {
-      undefined;
     }
 
     adoptedCallback() {
-      undefined;
     }
 
-    attributeChangedCallback(attribute, oldValue, newValue) {
+    attributeChangedCallback(attribute: unknown, oldValue: unknown, newValue: unknown) {
       inputSubject.next({ attribute, oldValue, newValue });
     }
 
     static get observedAttributes() {
       return inputAttributes;
     }
-
-    async attachTemplate(template: Promise<any> | string): Promise<void> {
-      const wrapperElement = document.createElement('div');
-      wrapperElement.innerHTML = template instanceof Promise ? (await template).default : template;
-
-      const fragment = document.createDocumentFragment();
-      for (let i = 0; i < wrapperElement.childNodes.length; ++i) {
-        fragment.appendChild(wrapperElement.childNodes[i]);
-      }
-      this.shadowRoot?.appendChild(fragment);
-    }
-
-    async attachStyle(style: Promise<any> | string): Promise<void> {
-      const styleElement = document.createElement('style');
-      styleElement.textContent = style instanceof Promise ? (await style).default : style;
-      this.shadowRoot?.appendChild(styleElement);
-    }
   };
 
   return function <T extends Constructor<any>>(BaseClass: T) {
     return class extends BaseClass {
+      shadowRoot: ShadowRoot;
+
       constructor(..._args: any[]) {
         super(..._args);
 
@@ -94,29 +75,38 @@ export function Component(args: ComponentArguments) {
           inputAttributes.push(attrs[i]);
         }
 
-        const htmlElementSub = htmlElementSubject.subscribe(data => {
-          BaseClass.prototype.shadowRoot = data.shadowRoot;
+        const htmlElementSub = htmlElementSubject.subscribe(({ htmlElement }) => {
+          this.shadowRoot = htmlElement.shadowRoot;
 
-          inputSubject.subscribe(data => {
+          if (args.style) {
+            attachStyle(this.shadowRoot, args.style);
+          }
+
+          attachStyle(this.shadowRoot, '');
+
+          inputSubject.subscribe(async (data) => {
             if (!data) {
               return;
             }
 
-            let value;
-
-            try {
-              value = JSON.parse(data.newValue);
-            } catch (error) {
-              value = data.newValue;
-            }
-
             const property = this[inputField][data.attribute];
-            this[property] = value;
+            if (data.newValue.startsWith('@')) {
+              this[property] = window['penComponents'][data.newValue.substring(1)];
+              window['penComponents'][data.newValue.substring(1)] = undefined;
+            } else {
+              this[property] = data.newValue;
+            }
           });
 
-          if (isOnInit(this)) {
-            this.fcOnInit();
-          }
+          customElements.whenDefined(args.selector).then(() => {
+            if (args.template) {
+              attachTemplate(this.shadowRoot, args.template(this));
+            }
+
+            if (hasOnInit(this)) {
+              this.onInit();
+            }
+          });
 
           htmlElementSubject.unsubscribe(htmlElementSub);
         });

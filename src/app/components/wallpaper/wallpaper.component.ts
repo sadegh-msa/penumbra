@@ -1,35 +1,28 @@
 import { Component } from '@decorators/component.decorator';
-import { Input } from '@decorators/input.decorator';
-import { OnInit } from '@interfaces/component.interface';
+import { Input } from '@decorators/component-input.decorator';
+import { ComponentEssentials } from '@models/component.model';
 import { Photo } from '@models/photo.model';
 import { PhotoService } from '@services/photo.service';
-import template from './wallpaper.component.html?raw';
-import style from './wallpaper.component.scss?inline';
+import style from './wallpaper.style.scss?inline';
+import template from './wallpaper.template';
 
 
 @Component({
-  selector: 'fc-wallpaper',
+  selector: 'pen-wallpaper',
   template,
   style
 })
-export class WallpaperComponent<T> implements OnInit {
+export class WallpaperComponent<T> implements ComponentEssentials {
   #styleElement: HTMLStyleElement;
-  #paginatorElement: HTMLElement;
   #photoService: PhotoService<T>;
 
   declare shadowRoot: ShadowRoot;
+  photo: Photo;
 
   get styleElement() {
     this.#styleElement ??= this.shadowRoot.lastChild as HTMLStyleElement;
 
     return this.#styleElement;
-  }
-
-  get paginatorElement() {
-    this.#paginatorElement ??= this.shadowRoot
-      .getElementById('fcWallpaperPaginator') as HTMLElement;
-
-    return this.#paginatorElement;
   }
 
   @Input()
@@ -44,9 +37,8 @@ export class WallpaperComponent<T> implements OnInit {
         return;
       }
 
-      const photo = data.photos[((max) => Math.floor(Math.random() * max))(data.photos.length)];
-      this.paginatorElement.setAttribute('photographer', JSON.stringify(photo.photographer()));
-      this.updateBackground(photo);
+      this.photo = data.photos[((max) => Math.floor(Math.random() * max))(data.photos.length)];
+      this.updateBackground();
     });
   }
 
@@ -54,19 +46,18 @@ export class WallpaperComponent<T> implements OnInit {
     this.#photoService = photoService;
   }
 
-  fcOnInit(): void {
-    undefined;
+  onInit() {
   }
 
-  updateBackground(photo: Photo) {
+  updateBackground() {
     this.styleElement.innerHTML = `
       :host {
-        .fc-wallpaper-photo::before {
-          background-image: url(${photo.tinySize()});
+        .pen-wallpaper-photo::before {
+          background-image: url(${this.photo.tinySize()});
         }
 
-        .fc-wallpaper-photo::after {
-          background-image: url(${photo.largeSize()});
+        .pen-wallpaper-photo::after {
+          background-image: url(${this.photo.largeSize()});
         }
       }
     `;

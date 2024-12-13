@@ -18,7 +18,7 @@
   display: flex;
   justify-content: center;
 
-  .fc-wallpaper-photo {
+  .pen-wallpaper-photo {
     &::before {
       @extend %wallpaper-photo;
       content: '';
@@ -34,7 +34,7 @@
     }
   }
 
-  fc-paginator {
+  pen-paginator {
     backdrop-filter: blur(0.5em);
     bottom: 0;
     margin: $sp4 auto;

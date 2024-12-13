@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/focus-climb.iml" filepath="$PROJECT_DIR$/.idea/focus-climb.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/penumbra.iml" filepath="$PROJECT_DIR$/.idea/penumbra.iml" />
     </modules>
   </component>
 </project>

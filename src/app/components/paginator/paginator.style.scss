@@ -14,7 +14,7 @@ $shadow-hover: 2px 2px 5px $shadow-color;
   align-items: center;
   padding: $sp2;
 
-  .fc-paginator-photographer {
+  .pen-paginator-photographer {
     display: flex;
     align-items: center;
     font-size: $sp2;
@@ -24,7 +24,7 @@ $shadow-hover: 2px 2px 5px $shadow-color;
     color: white;
     gap: $sp1;
 
-      fc-icon {
+      pen-icon {
         &::part(svg) {
           transition: filter 300ms ease-in;
           fill: white;
@@ -34,7 +34,7 @@ $shadow-hover: 2px 2px 5px $shadow-color;
     &:hover {
       text-shadow: $shadow-hover;
 
-      fc-icon svg {
+      pen-icon svg {
         filter: drop-shadow($shadow-hover);
       }
     }
@@ -43,7 +43,7 @@ $shadow-hover: 2px 2px 5px $shadow-color;
     &:active {
       text-shadow: $shadow;
 
-      fc-icon svg {
+      pen-icon svg {
         filter: drop-shadow($shadow);
       }
     }

@@ -4,7 +4,7 @@ import { PhotoSourceCache } from '@models/photo-source-cache.model';
 import { PhotoSource } from '@models/photo-source.model';
 
 export class PhotoService<T> {
-  readonly CACHE_KEY = 'fc_photos_service';
+  readonly CACHE_KEY = 'pen_photos_service';
   readonly CACHE_TIME_DURATION = 30; // Minutes
 
   constructor(public photoSource: PhotoSource<T>) {
