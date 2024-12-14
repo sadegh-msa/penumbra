@@ -1,6 +1,6 @@
 function wallpaperTemplate(params: any) {
   const key = window.crypto.randomUUID();
-  window['penComponents'] = {
+  window['penElements'] = {
     [key]: params.photo.photographer()
   };
   return `

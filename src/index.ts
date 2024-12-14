@@ -3,12 +3,12 @@ import './styles/main.scss';
 
 (async () => {
   try {
-    new (await import('@components/icon/icon.component')).IconComponent();
-    new (await import('@components/paginator/paginator.component')).PaginatorComponent();
+    (await import('@app/elements/icon/icon.element')).createIconElement();
+    (await import('@app/elements/paginator/paginator.element')).createPaginatorElement();
     const { pexelsPhotoSource } = (await import('@app/photo-sources/pexels'));
     const photoService = new (await import('@services/photo.service')).PhotoService<PexelsResponse>(pexelsPhotoSource);
-    new (await import('@components/wallpaper/wallpaper.component')).WallpaperComponent<PexelsResponse>(photoService);
-    new (await import('@components/app/app.component')).AppComponent;
+    (await import('@app/elements/wallpaper/wallpaper.element')).createWallpaperElement(photoService);
+    (await import('@app/elements/app/app.element')).createAppElement();
   } catch (error) {
     console.error(error);
   }

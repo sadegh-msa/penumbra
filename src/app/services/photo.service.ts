@@ -1,4 +1,4 @@
-import { UrlHelper } from '@helpers/url.helper';
+import { convertToQueryString } from '@helpers/url.helper';
 import { PhotoResponse } from '@models/photo-response.model';
 import { PhotoSourceCache } from '@models/photo-source-cache.model';
 import { PhotoSource } from '@models/photo-source.model';
@@ -60,7 +60,7 @@ export class PhotoService<T> {
   }
 
   async sendRequest(): Promise<T> {
-    const queryString = UrlHelper.convertToQueryString(this.photoSource.params);
+    const queryString = convertToQueryString(this.photoSource.params);
     const request = new Request(`${this.photoSource.url}?${queryString}`);
     const headers = new Headers();
     const photoHeaders = Object.keys(this.photoSource.headers);

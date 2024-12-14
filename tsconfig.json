@@ -22,7 +22,8 @@
     "noUnusedParameters": true,
     "outDir": "./dist",
     "paths": {
-      "@components/*": ["./src/app/components/*"],
+      "@elements/*": ["./src/app/elements/*"],
+      "@creators/*": ["./src/app/creators/*"],
       "@decorators/*": ["./src/app/decorators/*"],
       "@helpers/*": ["./src/app/helpers/*"],
       "@interfaces/*": ["./src/app/interfaces/*"],
