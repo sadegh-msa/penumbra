@@ -1,4 +1,4 @@
-import { ElementAttribute, ElementClass, ElementCreator, ElementProperties } from '@models/element.model';
+import { ElementInput, ElementClass, ElementCreator, ElementProperties } from '@models/element.model';
 import { BehaviourSubject } from '@reactive/behaviour-subject';
 import { Subject } from '@reactive/subject';
 
@@ -21,8 +21,9 @@ export function attachStyle(shadowRoot: ShadowRoot, style: string) {
 }
 
 export function createCustomElement(customElement: ElementProperties) {
-  const inputSubject = new BehaviourSubject<ElementAttribute>(undefined);
-  const htmlElementSubject = new Subject<ElementClass>();
+  const input$ = new BehaviourSubject<ElementInput>(null);
+  const destroy$ = new Subject<void>();
+  const htmlElement$ = new Subject<ElementClass>();
   const HtmlElementClass = class extends HTMLElement {
     constructor() {
       super();
@@ -35,17 +36,23 @@ export function createCustomElement(customElement: ElementProperties) {
     }
 
     connectedCallback() {
-      htmlElementSubject.next({ htmlElement: this });
+      // console.log('Custom element added to page.');
+      htmlElement$.next({ htmlElement: this });
     }
 
     disconnectedCallback() {
+      destroy$.next(null);
+      // console.log('Custom element removed from page.');
     }
 
     adoptedCallback() {
+      // console.log('Custom element moved to new page.');
     }
 
     attributeChangedCallback(attribute: unknown, oldValue: unknown, newValue: unknown) {
-      inputSubject.next({ attribute, oldValue, newValue });
+      //console.log(`Attribute <${attribute}> has changed.`);
+      // console.log({ attribute, oldValue, newValue });
+      input$.next({ attribute, oldValue, newValue });
     }
 
     static get observedAttributes() {
@@ -54,26 +61,11 @@ export function createCustomElement(customElement: ElementProperties) {
   };
 
   return new Promise<ElementCreator>((resolve, reject) => {
-    const htmlElementSub = htmlElementSubject.subscribe(({ htmlElement }) => {
-      htmlElementSubject.unsubscribe(htmlElementSub);
-      const shadowRoot = htmlElement.shadowRoot;
-      const fields: ElementCreator['fields'] = {};
-
-      inputSubject.subscribe(async (data) => {
-        if (!data) {
-          return;
-        }
-
-        if (data.newValue.startsWith('@')) {
-          fields[data.attribute] = window['penElements'][data.newValue.substring(1)];
-          window['penElements'][data.newValue.substring(1)] = undefined;
-        } else {
-          fields[data.attribute] = data.newValue;
-        }
-      });
+    const htmlElementSub = htmlElement$.subscribe(({ htmlElement }) => {
+      htmlElement$.unsubscribe(htmlElementSub);
 
       customElements.whenDefined(customElement.selector).then(() => {
-        resolve({ shadowRoot, fields });
+        resolve({ htmlElement, input$, destroy$ });
       }).catch(reject);
     });
 

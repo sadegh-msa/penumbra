@@ -24,12 +24,31 @@ function loadIcon(shadowRoot: ShadowRoot, icon: string) {
   });
 }
 
-export async function createIconElement() {
-  const { fields, shadowRoot } = await createCustomElement({
+export default async function createIconElement() {
+  const { input$, destroy$, htmlElement } = await createCustomElement({
     selector: 'pen-icon',
     attributes: ['icon']
   });
+  const shadowRoot = htmlElement.shadowRoot!;
 
   attachStyle(shadowRoot, style);
-  loadIcon(shadowRoot, fields.icon);
+
+  const inputSub = input$.subscribe(async (data) => {
+    if (!data) {
+      return;
+    }
+
+    const { attribute, newValue } = data;
+
+    if (attribute === 'icon') {
+      const parentNode = htmlElement.getRootNode().host;
+      const icon = parentNode['penInputs'][newValue];
+      loadIcon(shadowRoot, icon);
+    }
+  });
+
+  const destroySub = destroy$.subscribe(() => {
+    input$.unsubscribe(inputSub);
+    destroy$.unsubscribe(destroySub);
+  });
 }

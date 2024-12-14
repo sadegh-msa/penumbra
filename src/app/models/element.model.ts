@@ -1,6 +1,9 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 
-export interface ElementAttribute {
+import { BehaviourSubject } from '@reactive/behaviour-subject';
+import { Subject } from '@reactive/subject';
+
+export interface ElementInput {
   attribute: string;
   oldValue: unknown;
   newValue: unknown;
@@ -12,8 +15,9 @@ export interface ElementProperties {
 }
 
 export interface ElementCreator {
-  shadowRoot: ShadowRoot;
-  fields: Record<string, any>;
+  htmlElement: HTMLElement;
+  destroy$: Subject<void>;
+  input$: BehaviourSubject<ElementInput>;
 }
 
 export interface ElementClass {

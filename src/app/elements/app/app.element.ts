@@ -2,11 +2,12 @@ import { attachStyle, attachTemplate, createCustomElement } from '@creators/cust
 import style from './app.style.scss?inline';
 import template from './app.template';
 
-export async function createAppElement() {
-  const { fields, shadowRoot } = await createCustomElement({
+export default async function createAppElement() {
+  const { htmlElement } = await createCustomElement({
     selector: 'pen-app',
   });
+  const shadowRoot = htmlElement.shadowRoot!;
 
   attachStyle(shadowRoot, style);
-  attachTemplate(shadowRoot, template(fields));
+  attachTemplate(shadowRoot, template(shadowRoot, { search: 'boat' }));
 }

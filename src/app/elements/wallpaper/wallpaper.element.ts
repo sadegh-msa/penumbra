@@ -1,5 +1,5 @@
 import { attachStyle, attachTemplate, createCustomElement } from '@creators/custom-element.creator';
-import { Photo } from '@models/photo.model';
+import type { Photo } from '@models/photo.model';
 import { PhotoService } from '@services/photo.service';
 import style from './wallpaper.style.scss?inline';
 import template from './wallpaper.template';
@@ -22,8 +22,8 @@ function updateBackground(shadowRoot: ShadowRoot, photo: Photo) {
 
 async function search<T>(photoService: PhotoService<T>, query: string) {
   photoService.photoSource.params.query = query;
-  photoService.photoSource.params.page = 10;
-  // this.photoService.photoSource.params.page = Math.floor(Math.random() * 80);
+  // photoService.photoSource.params.page = 1;
+  photoService.photoSource.params.page = Math.floor(Math.random() * 80);
 
   const data = await photoService.loadPhotos();
 
@@ -35,17 +35,37 @@ async function search<T>(photoService: PhotoService<T>, query: string) {
   return data.photos[((max) => Math.floor(Math.random() * max))(data.photos.length)];
 }
 
-export async function createWallpaperElement<T>(photoService: PhotoService<T>) {
-  const { fields, shadowRoot } = await createCustomElement({
+export default async function createWallpaperElement<T>(photoService: PhotoService<T>) {
+  const { input$, destroy$, htmlElement } = await createCustomElement({
     selector: 'pen-wallpaper',
     attributes: ['search'],
   });
+  const shadowRoot = htmlElement.shadowRoot!;
 
-  const photo = await search(photoService, fields.search);
   attachStyle(shadowRoot, style);
-  attachTemplate(shadowRoot, template({ ...fields, photo }));
 
-  if (photo) {
-    updateBackground(shadowRoot, photo);
-  }
+  const inputSub = input$.subscribe(async (data) => {
+    if (!data) {
+      return;
+    }
+
+    const { attribute, newValue } = data;
+
+    if (attribute === 'search') {
+      const parentNode = htmlElement.getRootNode().host;
+      const searchQuery = parentNode['penInputs'][newValue];
+      const photo = (await search(photoService, searchQuery)) as Photo;
+
+      if (photo) {
+        updateBackground(shadowRoot, photo);
+      }
+
+      attachTemplate(shadowRoot, template(shadowRoot, { photo }));
+    }
+  });
+
+  const destroySub = destroy$.subscribe(() => {
+    input$.unsubscribe(inputSub);
+    destroy$.unsubscribe(destroySub);
+  });
 }
