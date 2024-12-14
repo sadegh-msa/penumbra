@@ -1,18 +1,13 @@
 @use 'variables' as *;
 @use 'common';
 
-$shadow-color: black;
-$shadow: 1px 1px 3px $shadow-color;
-$shadow-hover: 2px 2px 5px $shadow-color;
+$shadow: 1px 1px 3px black;
 
 :host {
-  background-color: black;
-  opacity: 0.5;
   border-radius: $sp1;
-  box-shadow: 4px 4px 10px $shadow-color;
   display: flex;
   align-items: center;
-  padding: $sp2;
+  padding: $sp1 $sp2;
 
   .pen-paginator-photographer {
     display: flex;
@@ -23,29 +18,12 @@ $shadow-hover: 2px 2px 5px $shadow-color;
     z-index: 12;
     color: white;
     gap: $sp1;
+    text-shadow: $shadow;
 
-      pen-icon {
-        &::part(svg) {
-          transition: filter 300ms ease-in;
-          fill: white;
-        }
-      }
-
-    &:hover {
-      text-shadow: $shadow-hover;
-
-      pen-icon svg {
-        filter: drop-shadow($shadow-hover);
-      }
-    }
-
-    &,
-    &:active {
-      text-shadow: $shadow;
-
-      pen-icon svg {
-        filter: drop-shadow($shadow);
-      }
+    pen-icon::part(svg) {
+      transition: filter 300ms ease-in;
+      fill: white;
+      filter: drop-shadow($shadow);
     }
   }
 }
