@@ -1,8 +1,11 @@
-import { attachStyle, attachTemplate, createCustomElement } from '@creators/custom-element.creator';
+import { attachStyle, attachTemplate, createCustomElement, fetchInput, injectChildrenInputs } from '@app/utils/custom-element.utils';
+import { compileTemplate } from '@app/utils/template.utils';
 import type { Photo } from '@models/photo.model';
 import { PhotoService } from '@services/photo.service';
-import style from './wallpaper.style.scss?inline';
-import template from './wallpaper.template';
+import templateString from './wallpaper.hbs?raw';
+import styleString from './wallpaper.scss?inline';
+
+const template = compileTemplate(templateString);
 
 function updateBackground(shadowRoot: ShadowRoot, photo: Photo) {
   const style = `
@@ -42,7 +45,7 @@ export default async function createWallpaperElement<T>(photoService: PhotoServi
   });
   const shadowRoot = htmlElement.shadowRoot!;
 
-  attachStyle(shadowRoot, style);
+  attachStyle(shadowRoot, styleString);
 
   const inputSub = input$.subscribe(async (data) => {
     if (!data) {
@@ -52,15 +55,14 @@ export default async function createWallpaperElement<T>(photoService: PhotoServi
     const { attribute, newValue } = data;
 
     if (attribute === 'search') {
-      const parentNode = htmlElement.getRootNode().host;
-      const searchQuery = parentNode['penInputs'][newValue];
-      const photo = (await search(photoService, searchQuery)) as Photo;
+      const searchQuery = fetchInput(htmlElement, newValue);
+      const photo = (await search(photoService, searchQuery));
 
       if (photo) {
+        const inputs = injectChildrenInputs(shadowRoot, { photographer: photo.photographer() });
         updateBackground(shadowRoot, photo);
+        attachTemplate(shadowRoot, template(inputs));
       }
-
-      attachTemplate(shadowRoot, template(shadowRoot, { photo }));
     }
   });
 

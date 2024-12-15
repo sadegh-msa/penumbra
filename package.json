@@ -32,5 +32,8 @@
     "start": "vite --mode development",
     "build": "vite build",
     "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "handlebars": "^4.7.8"
   }
 }

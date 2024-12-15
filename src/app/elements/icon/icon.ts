@@ -1,5 +1,5 @@
-import { attachStyle, createCustomElement } from '@creators/custom-element.creator';
-import style from './icon.style.scss?inline';
+import { attachStyle, createCustomElement, fetchInput } from '@app/utils/custom-element.utils';
+import styleString from './icon.scss?inline';
 
 function getIconUrl(icon: string) {
   return `icons/${icon}.svg`;
@@ -31,7 +31,7 @@ export default async function createIconElement() {
   });
   const shadowRoot = htmlElement.shadowRoot!;
 
-  attachStyle(shadowRoot, style);
+  attachStyle(shadowRoot, styleString);
 
   const inputSub = input$.subscribe(async (data) => {
     if (!data) {
@@ -41,8 +41,7 @@ export default async function createIconElement() {
     const { attribute, newValue } = data;
 
     if (attribute === 'icon') {
-      const parentNode = htmlElement.getRootNode().host;
-      const icon = parentNode['penInputs'][newValue];
+      const icon = fetchInput(htmlElement, newValue);
       loadIcon(shadowRoot, icon);
     }
   });

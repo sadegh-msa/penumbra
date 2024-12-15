@@ -1,6 +1,8 @@
-import { ElementInput, ElementClass, ElementCreator, ElementProperties } from '@models/element.model';
+import { ElementClass, ElementCreator, ElementInput, ElementProperties } from '@models/element.model';
 import { BehaviourSubject } from '@reactive/behaviour-subject';
 import { Subject } from '@reactive/subject';
+
+const INPUTS_KEY = 'penInputs';
 
 export function attachTemplate(shadowRoot: ShadowRoot, template: string) {
   const wrapperElement = document.createElement('div');
@@ -9,15 +11,39 @@ export function attachTemplate(shadowRoot: ShadowRoot, template: string) {
   for (let i = 0; i < wrapperElement.childNodes.length; ++i) {
     fragment.appendChild(wrapperElement.childNodes[i]);
   }
-  shadowRoot.appendChild(fragment);
+
+  return shadowRoot.appendChild(fragment);
 }
 
 export function attachStyle(shadowRoot: ShadowRoot, style: string) {
   const styleElement = document.createElement('style');
   styleElement.innerText = style.trim();
-  shadowRoot.appendChild(styleElement);
 
-  return styleElement;
+  return shadowRoot.appendChild(styleElement);
+}
+
+export function injectChildrenInputs(shadowRoot: ShadowRoot, inputs: Record<string, unknown>) {
+  const keyMap: Record<string, string> = {};
+  const valueMap: Record<string, unknown> = {};
+
+  const inputEntries = Object.entries(inputs || {});
+  const inputEntriesLength = inputEntries.length;
+
+  for (let i = 0; i < inputEntriesLength; i++) {
+    const [key, value] = inputEntries[i];
+    const uuid = crypto.randomUUID();
+    keyMap[key] = uuid;
+    valueMap[uuid] = value;
+  }
+
+  shadowRoot.getRootNode().host[INPUTS_KEY] = valueMap;
+
+  return keyMap;
+}
+
+export function fetchInput<T = string>(htmlElement: HTMLElement, key: string) {
+  const parentNode = htmlElement.getRootNode().host;
+  return parentNode[INPUTS_KEY][key] as T;
 }
 
 export function createCustomElement(customElement: ElementProperties) {

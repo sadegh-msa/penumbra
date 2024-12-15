@@ -1,7 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-
 import { BehaviourSubject } from '@reactive/behaviour-subject';
 import { Subject } from '@reactive/subject';
+
+type HtmlElement = HTMLElement & { shadowRoot: ShadowRoot };
 
 export interface ElementInput {
   attribute: string;
@@ -15,11 +15,11 @@ export interface ElementProperties {
 }
 
 export interface ElementCreator {
-  htmlElement: HTMLElement;
+  htmlElement: HtmlElement;
   destroy$: Subject<void>;
   input$: BehaviourSubject<ElementInput>;
 }
 
 export interface ElementClass {
-  htmlElement: HTMLElement;
+  htmlElement: HtmlElement;
 }

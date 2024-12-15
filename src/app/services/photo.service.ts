@@ -1,4 +1,4 @@
-import { convertToQueryString } from '@helpers/url.helper';
+import { convertToQueryString } from '@app/utils/url.utils';
 import { PhotoResponse } from '@models/photo-response.model';
 import { PhotoSourceCache } from '@models/photo-source-cache.model';
 import { PhotoSource } from '@models/photo-source.model';
