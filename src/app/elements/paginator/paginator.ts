@@ -7,31 +7,25 @@ import styleString from './paginator.scss?inline';
 const template = compileTemplate(templateString);
 
 export default async function createPaginatorElement() {
-  const { input$, destroy$, htmlElement } = await createCustomElement({
+  const { init$, input$ } = await createCustomElement({
     selector: 'pen-paginator',
     attributes: ['photographer']
   });
-  const shadowRoot = htmlElement.shadowRoot;
 
-  attachStyle(shadowRoot, styleString);
+  init$.subscribe(({ htmlElement }) => {
+    const shadowRoot = htmlElement.shadowRoot;
 
-  const inputSub = input$.subscribe(async (data) => {
-    if (!data) {
-      return;
-    }
+    attachStyle(shadowRoot, styleString);
 
-    const { attribute, newValue } = data;
+    input$.subscribe(async (data) => {
+      const { attribute, newValue } = data;
 
-    if (attribute === 'photographer') {
-      const photographer = fetchInput<Photographer>(htmlElement, newValue);
-      const inputs = injectChildrenInputs(shadowRoot, { cameraIcon: 'outline/camera' });
+      if (attribute === 'photographer' && newValue) {
+        const photographer = fetchInput<Photographer>(htmlElement, newValue);
+        const inputs = injectChildrenInputs(shadowRoot, { cameraIcon: 'outline/camera' });
 
-      attachTemplate(shadowRoot, template({ photographer, ...inputs }));
-    }
-  });
-
-  const destroySub = destroy$.subscribe(() => {
-    input$.unsubscribe(inputSub);
-    destroy$.unsubscribe(destroySub);
+        attachTemplate(shadowRoot, template({ photographer, ...inputs }));
+      }
+    });
   });
 }

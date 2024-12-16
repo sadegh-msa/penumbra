@@ -1,6 +1,5 @@
 import { ElementClass, ElementCreator, ElementInput, ElementProperties } from '@models/element.model';
-import { BehaviourSubject } from '@reactive/behaviour-subject';
-import { Subject } from '@reactive/subject';
+import { BehaviorSubject, filter, first, Subject, takeUntil } from 'rxjs';
 
 const INPUTS_KEY = 'penInputs';
 
@@ -47,10 +46,16 @@ export function fetchInput<T = string>(htmlElement: HTMLElement, key: string) {
 }
 
 export function createCustomElement(customElement: ElementProperties) {
-  const input$ = new BehaviourSubject<ElementInput>(null);
+  const init$ = new BehaviorSubject<ElementClass | null>(null);
   const destroy$ = new Subject<void>();
-  const htmlElement$ = new Subject<ElementClass>();
+  const input$ = new Subject<ElementInput>();
   const HtmlElementClass = class extends HTMLElement {
+    declare shadowRoot: ShadowRoot;
+
+    static get observedAttributes() {
+      return customElement.attributes || [];
+    }
+
     constructor() {
       super();
 
@@ -63,37 +68,40 @@ export function createCustomElement(customElement: ElementProperties) {
 
     connectedCallback() {
       // console.log('Custom element added to page.');
-      htmlElement$.next({ htmlElement: this });
+      init$.next({ htmlElement: this });
+
+      const attributes = HtmlElementClass.observedAttributes;
+      const attributesLength = attributes.length;
+
+      for (let i = 0; i < attributesLength; i++) {
+        const attribute = attributes[i];
+        input$.next({ attribute, oldValue: null, newValue: this.getAttribute(attribute) });
+      }
     }
 
     disconnectedCallback() {
-      destroy$.next(null);
       // console.log('Custom element removed from page.');
+      destroy$.next();
     }
 
     adoptedCallback() {
       // console.log('Custom element moved to new page.');
     }
 
-    attributeChangedCallback(attribute: unknown, oldValue: unknown, newValue: unknown) {
+    attributeChangedCallback(attribute: string, oldValue: string, newValue: string) {
       //console.log(`Attribute <${attribute}> has changed.`);
-      // console.log({ attribute, oldValue, newValue });
       input$.next({ attribute, oldValue, newValue });
-    }
-
-    static get observedAttributes() {
-      return customElement.attributes || [];
     }
   };
 
   return new Promise<ElementCreator>((resolve, reject) => {
-    const htmlElementSub = htmlElement$.subscribe(({ htmlElement }) => {
-      htmlElement$.unsubscribe(htmlElementSub);
-
-      customElements.whenDefined(customElement.selector).then(() => {
-        resolve({ htmlElement, input$, destroy$ });
-      }).catch(reject);
-    });
+    customElements.whenDefined(customElement.selector).then(() => {
+      resolve({
+        init$: init$.pipe(takeUntil(destroy$), filter(v => !!v)),
+        input$: input$.pipe(takeUntil(destroy$), filter(v => !!v)),
+        destroy$: destroy$.pipe(first()),
+      });
+    }).catch(reject);
 
     customElements.define(customElement.selector, HtmlElementClass);
   });

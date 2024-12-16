@@ -6,12 +6,15 @@ import styleString from './app.scss?inline';
 const template = compileTemplate(templateString);
 
 export default async function createAppElement() {
-  const { htmlElement } = await createCustomElement({
+  const { init$ } = await createCustomElement({
     selector: 'pen-app',
   });
-  const shadowRoot = htmlElement.shadowRoot;
-  const inputs = injectChildrenInputs(shadowRoot, { search: 'landscape' });
 
-  attachStyle(shadowRoot, styleString);
-  attachTemplate(shadowRoot, template(inputs));
+  init$.subscribe(({ htmlElement }) => {
+    const shadowRoot = htmlElement.shadowRoot;
+    const inputs = injectChildrenInputs(shadowRoot, { search: 'landscape' });
+
+    attachStyle(shadowRoot, styleString);
+    attachTemplate(shadowRoot, template(inputs));
+  });
 }

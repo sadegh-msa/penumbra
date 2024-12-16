@@ -1,12 +1,11 @@
-import { BehaviourSubject } from '@reactive/behaviour-subject';
-import { Subject } from '@reactive/subject';
+import { Observable } from 'rxjs';
 
 type HtmlElement = HTMLElement & { shadowRoot: ShadowRoot };
 
 export interface ElementInput {
   attribute: string;
-  oldValue: unknown;
-  newValue: unknown;
+  oldValue: string | null;
+  newValue: string | null;
 }
 
 export interface ElementProperties {
@@ -15,9 +14,9 @@ export interface ElementProperties {
 }
 
 export interface ElementCreator {
-  htmlElement: HtmlElement;
-  destroy$: Subject<void>;
-  input$: BehaviourSubject<ElementInput>;
+  init$: Observable<ElementClass>;
+  destroy$: Observable<void>;
+  input$: Observable<ElementInput>;
 }
 
 export interface ElementClass {

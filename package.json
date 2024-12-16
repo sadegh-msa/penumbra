@@ -34,6 +34,7 @@
     "clean": "rm -rf dist"
   },
   "dependencies": {
-    "handlebars": "^4.7.8"
+    "handlebars": "^4.7.8",
+    "rxjs": "^7.8.1"
   }
 }

@@ -39,35 +39,29 @@ async function search<T>(photoService: PhotoService<T>, query: string) {
 }
 
 export default async function createWallpaperElement<T>(photoService: PhotoService<T>) {
-  const { input$, destroy$, htmlElement } = await createCustomElement({
+  const { init$, input$ } = await createCustomElement({
     selector: 'pen-wallpaper',
     attributes: ['search'],
   });
-  const shadowRoot = htmlElement.shadowRoot!;
 
-  attachStyle(shadowRoot, styleString);
+  init$.subscribe(({ htmlElement }) => {
+    const shadowRoot = htmlElement.shadowRoot!;
 
-  const inputSub = input$.subscribe(async (data) => {
-    if (!data) {
-      return;
-    }
+    attachStyle(shadowRoot, styleString);
 
-    const { attribute, newValue } = data;
+    input$.subscribe(async (data) => {
+      const { attribute, newValue } = data;
 
-    if (attribute === 'search') {
-      const searchQuery = fetchInput(htmlElement, newValue);
-      const photo = (await search(photoService, searchQuery));
+      if (attribute === 'search' && newValue) {
+        const searchQuery = fetchInput(htmlElement, newValue);
+        const photo = (await search(photoService, searchQuery));
 
-      if (photo) {
-        const inputs = injectChildrenInputs(shadowRoot, { photographer: photo.photographer() });
-        updateBackground(shadowRoot, photo);
-        attachTemplate(shadowRoot, template(inputs));
+        if (photo) {
+          const inputs = injectChildrenInputs(shadowRoot, { photographer: photo.photographer() });
+          updateBackground(shadowRoot, photo);
+          attachTemplate(shadowRoot, template(inputs));
+        }
       }
-    }
-  });
-
-  const destroySub = destroy$.subscribe(() => {
-    input$.unsubscribe(inputSub);
-    destroy$.unsubscribe(destroySub);
+    });
   });
 }
