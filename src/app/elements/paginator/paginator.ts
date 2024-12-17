@@ -22,9 +22,8 @@ export default async function createPaginatorElement() {
 
       if (attribute === 'photographer' && newValue) {
         const photographer = fetchInput<Photographer>(htmlElement, newValue);
-        const inputs = injectChildrenInputs(shadowRoot, { cameraIcon: 'outline/camera' });
 
-        attachTemplate(shadowRoot, template({ photographer, ...inputs }));
+        attachTemplate(shadowRoot, template({ photographer }));
       }
     });
   });

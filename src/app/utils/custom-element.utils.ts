@@ -2,6 +2,7 @@ import { ElementClass, ElementCreator, ElementInput, ElementProperties } from '@
 import { BehaviorSubject, filter, first, Subject, takeUntil } from 'rxjs';
 
 const INPUTS_KEY = 'penInputs';
+const INPUTS_PREFIX = '@@';
 
 export function attachTemplate(shadowRoot: ShadowRoot, template: string) {
   const wrapperElement = document.createElement('div');
@@ -30,7 +31,7 @@ export function injectChildrenInputs(shadowRoot: ShadowRoot, inputs: Record<stri
 
   for (let i = 0; i < inputEntriesLength; i++) {
     const [key, value] = inputEntries[i];
-    const uuid = crypto.randomUUID();
+    const uuid = `${INPUTS_PREFIX}${crypto.randomUUID()}`;
     keyMap[key] = uuid;
     valueMap[uuid] = value;
   }
@@ -40,9 +41,13 @@ export function injectChildrenInputs(shadowRoot: ShadowRoot, inputs: Record<stri
   return keyMap;
 }
 
-export function fetchInput<T = string>(htmlElement: HTMLElement, key: string) {
-  const parentNode = htmlElement.getRootNode().host;
-  return parentNode[INPUTS_KEY][key] as T;
+export function fetchInput<T = string>(htmlElement: HTMLElement, attributeValue: string) {
+  if(attributeValue.startsWith(INPUTS_PREFIX)) {
+    const parentNode = htmlElement.getRootNode().host;
+    return parentNode[INPUTS_KEY][attributeValue] as T;
+  }
+
+  return attributeValue;
 }
 
 export function createCustomElement(customElement: ElementProperties) {
