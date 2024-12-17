@@ -10,12 +10,13 @@ const template = compileTemplate(templateString);
 function updateBackground(shadowRoot: ShadowRoot, photo: Photo) {
   const style = `
       :host {
-        .pen-wallpaper-photo::before {
+        .wallpaper::before {
           background-image: url(${photo.tinySize()});
         }
 
-        .pen-wallpaper-photo::after {
+        .wallpaper::after {
           background-image: url(${photo.largeSize()});
+          opacity: 1;
         }
       }
     `;

@@ -1,29 +1,22 @@
-@use 'variables' as *;
-@use 'common';
-
 $shadow: 1px 1px 3px black;
 
 :host {
-  border-radius: $sp1;
-  display: flex;
-  align-items: center;
-  padding: $sp1 $sp2;
+  @apply flex items-center;
+  @apply px-4 py-3 rounded-md;
 
-  .pen-paginator-photographer {
-    display: flex;
-    align-items: center;
-    font-size: $sp2;
-    font-weight: 500;
-    transition: text-shadow 300ms ease-in;
-    z-index: 12;
-    color: white;
-    gap: $sp1;
+  .photographer {
+    @apply flex items-center gap-2;
+    @apply font-medium text-white;
+    @apply transition-[text-shadow];
     text-shadow: $shadow;
 
     pen-icon::part(svg) {
-      transition: filter 300ms ease-in;
-      fill: white;
+      @apply transition-[filter] fill-white;
       filter: drop-shadow($shadow);
     }
+  }
+
+  a {
+    @apply no-underline;
   }
 }

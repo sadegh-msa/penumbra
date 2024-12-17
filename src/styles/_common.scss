@@ -1,5 +1,3 @@
-@use './variables' as *;
-
 a {
-  text-decoration: none;
+  @apply no-underline;
 }

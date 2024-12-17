@@ -1,51 +1,35 @@
-@use 'variables' as *;
-@use 'common';
 
-%wallpaper-photo {
-  background-color: transparent;
-  background-position: center;
-  background-repeat: no-repeat;
-  background-size: cover;
-  min-height: 100dvh;
-  min-width: 100dvw;
-  position: absolute;
-  left: 0;
-  top: 0;
-  overflow: hidden;
+%wallpaper-common {
+  @apply absolute left-0 top-0 overflow-hidden;
+  @apply bg-transparent bg-center bg-no-repeat bg-cover;
+  @apply h-dvh w-dvw;
 }
 
 :host {
-  display: flex;
-  justify-content: center;
+  @apply flex justify-center;
 
-  .pen-wallpaper-photo {
+  .wallpaper {
     &::before {
-      @extend %wallpaper-photo;
-      content: '';
-      z-index: 10;
+      @extend %wallpaper-common;
+      @apply content-[''] z-10;
+      filter: blur(2rem);
     }
 
     &::after {
-      @extend %wallpaper-photo;
-      content: '';
-      z-index: 11;
-      backdrop-filter: blur(2em);
-      transition: background-image 3s linear;
+      @extend %wallpaper-common;
+      @apply content-[''] z-[11] opacity-0;
+      transition: opacity 3000ms linear;
     }
   }
 
   pen-paginator {
-    bottom: 0;
-    margin: $sp4 auto;
-    position: absolute;
-    width: calc(100% - #{$sp10});
-    z-index: 50;
-    transition: all 200ms ease-in;
+    @apply absolute bottom-0 z-20;
+    @apply mx-auto my-6 w-[95%];
+    @apply transition-colors;
 
     &:hover {
-      background-color: rgba(0, 0, 0, 0.5);
-      box-shadow: 4px 4px 10px rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(0.5em);
+      @apply shadow-lg bg-black bg-opacity-40;
+      backdrop-filter: blur(1rem);
     }
   }
 }

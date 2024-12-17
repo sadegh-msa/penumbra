@@ -1,22 +1,16 @@
-@use 'variables' as *;
-
 :host {
-  display: block;
-  height: $sp3;
-  width: $sp3;
-  margin: 0;
-  padding: 0;
+  @apply block p-0 m-0;
+  @apply h-6 w-6;
 
   svg {
-    height: $sp3;
-    width: $sp3;
+    @apply h-full w-full;
 
     > * {
       &[fill] {
-        fill: inherit;
+        @apply fill-current;
       }
       &[stroke] {
-        stroke: inherit;
+        @apply stroke-current;
       }
     }
   }

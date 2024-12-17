@@ -1,21 +1,5 @@
-@use 'common';
-
 body {
-  height: 100vh;
-  width: 100vw;
-  padding: 0;
-  margin: 0;
+  @apply h-dvh w-dvw p-0 m-0;
+  @apply bg-neutral-300 dark:bg-black;
   font-family: Arial, sans-serif;
-}
-
-@media (prefers-color-scheme: light) {
-  body {
-    background-color: whitesmoke;
-  }
-}
-
-@media (prefers-color-scheme: dark) {
-  body {
-    background-color: black;
-  }
 }
