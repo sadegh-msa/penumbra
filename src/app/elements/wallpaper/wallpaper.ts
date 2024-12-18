@@ -45,7 +45,7 @@ export default async function createWallpaperElement<T>(photoService: PhotoServi
     attributes: ['search'],
   });
 
-  init$.subscribe(({ htmlElement }) => {
+  init$.subscribe(htmlElement => {
     const shadowRoot = htmlElement.shadowRoot!;
 
     attachStyle(shadowRoot, styleString);

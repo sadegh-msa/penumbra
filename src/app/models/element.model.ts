@@ -1,6 +1,6 @@
 import { Observable } from 'rxjs';
 
-type HtmlElement = HTMLElement & { shadowRoot: ShadowRoot };
+export type CustomHtmlElement = HTMLElement & { shadowRoot: ShadowRoot }
 
 export interface ElementInput {
   attribute: string;
@@ -14,11 +14,7 @@ export interface ElementProperties {
 }
 
 export interface ElementCreator {
-  init$: Observable<ElementClass>;
+  init$: Observable<CustomHtmlElement>;
   destroy$: Observable<void>;
   input$: Observable<ElementInput>;
-}
-
-export interface ElementClass {
-  htmlElement: HtmlElement;
 }

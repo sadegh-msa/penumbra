@@ -10,7 +10,7 @@ export default async function createAppElement() {
     selector: 'pen-app',
   });
 
-  init$.subscribe(({ htmlElement }) => {
+  init$.subscribe(htmlElement => {
     const shadowRoot = htmlElement.shadowRoot;
     const inputs = injectChildrenInputs(shadowRoot, { search: 'landscape' });
 

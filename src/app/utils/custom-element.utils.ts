@@ -1,4 +1,4 @@
-import { ElementClass, ElementCreator, ElementInput, ElementProperties } from '@models/element.model';
+import { CustomHtmlElement, ElementCreator, ElementInput, ElementProperties } from '@models/element.model';
 import { BehaviorSubject, filter, first, Subject, takeUntil } from 'rxjs';
 
 const INPUTS_KEY = 'penInputs';
@@ -42,7 +42,7 @@ export function injectChildrenInputs(shadowRoot: ShadowRoot, inputs: Record<stri
 }
 
 export function fetchInput<T = string>(htmlElement: HTMLElement, attributeValue: string) {
-  if(attributeValue.startsWith(INPUTS_PREFIX)) {
+  if (attributeValue.startsWith(INPUTS_PREFIX)) {
     const parentNode = htmlElement.getRootNode().host;
     return parentNode[INPUTS_KEY][attributeValue] as T;
   }
@@ -51,7 +51,7 @@ export function fetchInput<T = string>(htmlElement: HTMLElement, attributeValue:
 }
 
 export function createCustomElement(customElement: ElementProperties) {
-  const init$ = new BehaviorSubject<ElementClass | null>(null);
+  const init$ = new BehaviorSubject<CustomHtmlElement | null>(null);
   const destroy$ = new Subject<void>();
   const input$ = new Subject<ElementInput>();
   const HtmlElementClass = class extends HTMLElement {
@@ -64,6 +64,19 @@ export function createCustomElement(customElement: ElementProperties) {
     constructor() {
       super();
 
+      init$.pipe(
+        takeUntil(destroy$),
+        filter(v => !!v)
+      ).subscribe(() => {
+        const attributes = HtmlElementClass.observedAttributes;
+        const attributesLength = attributes.length;
+
+        for (let i = 0; i < attributesLength; i++) {
+          const attribute = attributes[i];
+          input$.next({ attribute, oldValue: null, newValue: this.getAttribute(attribute) });
+        }
+      });
+
       const internals = this.attachInternals();
 
       if (!internals.shadowRoot) {
@@ -73,15 +86,7 @@ export function createCustomElement(customElement: ElementProperties) {
 
     connectedCallback() {
       // console.log('Custom element added to page.');
-      init$.next({ htmlElement: this });
-
-      const attributes = HtmlElementClass.observedAttributes;
-      const attributesLength = attributes.length;
-
-      for (let i = 0; i < attributesLength; i++) {
-        const attribute = attributes[i];
-        input$.next({ attribute, oldValue: null, newValue: this.getAttribute(attribute) });
-      }
+      init$.next(this);
     }
 
     disconnectedCallback() {

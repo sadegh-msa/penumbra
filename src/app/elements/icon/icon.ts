@@ -39,7 +39,7 @@ export default async function createIconElement() {
     attributes: ['icon']
   });
 
-  init$.subscribe(({ htmlElement }) => {
+  init$.subscribe(htmlElement => {
     const shadowRoot = htmlElement.shadowRoot!;
 
     attachStyle(shadowRoot, styleString);

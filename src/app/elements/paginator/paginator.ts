@@ -12,7 +12,7 @@ export default async function createPaginatorElement() {
     attributes: ['photographer']
   });
 
-  init$.subscribe(({ htmlElement }) => {
+  init$.subscribe(htmlElement => {
     const shadowRoot = htmlElement.shadowRoot;
 
     attachStyle(shadowRoot, styleString);
