@@ -5,6 +5,7 @@ import codegen from 'eslint-plugin-codegen';
 import _import from 'eslint-plugin-import';
 import simpleImportSort from 'eslint-plugin-simple-import-sort';
 import sortDestructureKeys from 'eslint-plugin-sort-destructure-keys';
+import unusedImports from 'eslint-plugin-unused-imports';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -31,6 +32,7 @@ export default [
       import: _import,
       'sort-destructure-keys': sortDestructureKeys,
       'simple-import-sort': simpleImportSort,
+      'unused-imports': unusedImports,
       codegen
     },
 
@@ -62,16 +64,23 @@ export default [
       'import/first': 'error',
       'import/newline-after-import': 'error',
       'import/no-duplicates': 'error',
+      "unused-imports/no-unused-imports": "error",
+      "unused-imports/no-unused-vars": [
+        "warn",
+        {
+          "vars": "all",
+          "varsIgnorePattern": "^_",
+          "args": "after-used",
+          "argsIgnorePattern": "^_",
+        },
+      ],
       'sort-destructure-keys/sort-destructure-keys': 'error',
       '@typescript-eslint/array-type': ['warn', {
         default: 'array',
         readonly: 'array'
       }],
       '@typescript-eslint/consistent-type-imports': 'error',
-      '@typescript-eslint/no-unused-vars': ['error', {
-        argsIgnorePattern: '^_',
-        varsIgnorePattern: '^_'
-      }],
+      '@typescript-eslint/no-unused-vars': 'off',
       '@effect/dprint': ['error', {
         config: {
           indentWidth: 2,
