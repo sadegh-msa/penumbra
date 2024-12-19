@@ -41,8 +41,7 @@
     "strictPropertyInitialization": false,
     "target": "es2022",
     "types": [
-      "node",
-      "jest",
+      "node"
     ]
   },
   "exclude": [

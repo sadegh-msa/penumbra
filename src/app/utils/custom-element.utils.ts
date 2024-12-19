@@ -1,5 +1,6 @@
 import { CustomHtmlElement, ElementCreator, ElementInput, ElementProperties } from '@models/element.model';
 import { BehaviorSubject, filter, first, Subject, takeUntil } from 'rxjs';
+import { v4 as uuidv4 } from 'uuid';
 
 const INPUTS_KEY = 'penInputs';
 const INPUTS_PREFIX = '@@';
@@ -17,7 +18,7 @@ export function attachTemplate(shadowRoot: ShadowRoot, template: string) {
 
 export function attachStyle(shadowRoot: ShadowRoot, style: string) {
   const styleElement = document.createElement('style');
-  styleElement.innerText = style.trim();
+  styleElement.innerHTML = style.trim();
 
   return shadowRoot.appendChild(styleElement);
 }
@@ -31,19 +32,19 @@ export function injectChildrenInputs(shadowRoot: ShadowRoot, inputs: Record<stri
 
   for (let i = 0; i < inputEntriesLength; i++) {
     const [key, value] = inputEntries[i];
-    const uuid = `${INPUTS_PREFIX}${crypto.randomUUID()}`;
+    const uuid = `${INPUTS_PREFIX}${uuidv4()}`;
     keyMap[key] = uuid;
     valueMap[uuid] = value;
   }
 
-  shadowRoot.getRootNode().host[INPUTS_KEY] = valueMap;
+  shadowRoot.getRootNode()['host'][INPUTS_KEY] = valueMap;
 
   return keyMap;
 }
 
-export function fetchInput<T = string>(htmlElement: HTMLElement, attributeValue: string) {
+export function fetchInput<T = string>(node: HTMLElement | ShadowRoot, attributeValue: string) {
   if (attributeValue.startsWith(INPUTS_PREFIX)) {
-    const parentNode = htmlElement.getRootNode().host;
+    const parentNode = node.getRootNode()['host'];
     return parentNode[INPUTS_KEY][attributeValue] as T;
   }
 
