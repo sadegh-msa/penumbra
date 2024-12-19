@@ -1,4 +1,4 @@
-import { attachStyle, attachTemplate, createCustomElement, fetchInput, injectChildrenInputs } from '@app/utils/custom-element.utils';
+import { attachStyle, attachTemplate, createCustomElement, fetchInput } from '@app/utils/custom-element.utils';
 import { compileTemplate } from '@app/utils/template.utils';
 import type { Photographer } from '@models/photographer.model';
 import templateString from './paginator.hbs?raw';
@@ -17,7 +17,7 @@ export default async function createPaginatorElement() {
 
     attachStyle(shadowRoot, styleString);
 
-    input$.subscribe(async (data) => {
+    input$.subscribe(async data => {
       const { attribute, newValue } = data;
 
       if (attribute === 'photographer' && newValue) {

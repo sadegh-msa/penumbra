@@ -1,4 +1,4 @@
-import { CustomHtmlElement, ElementCreator, ElementInput, ElementProperties } from '@models/element.model';
+import type { CustomHtmlElement, ElementCreator, ElementInput, ElementProperties } from '@models/element.model';
 import { BehaviorSubject, filter, first, Subject, takeUntil } from 'rxjs';
 import { v4 as uuidv4 } from 'uuid';
 
@@ -100,7 +100,7 @@ export function createCustomElement(customElement: ElementProperties) {
     }
 
     attributeChangedCallback(attribute: string, oldValue: string, newValue: string) {
-      //console.log(`Attribute <${attribute}> has changed.`);
+      // console.log(`Attribute <${attribute}> has changed.`);
       input$.next({ attribute, oldValue, newValue });
     }
   };
@@ -110,7 +110,7 @@ export function createCustomElement(customElement: ElementProperties) {
       resolve({
         init$: init$.pipe(takeUntil(destroy$), filter(v => !!v)),
         input$: input$.pipe(takeUntil(destroy$), filter(v => !!v)),
-        destroy$: destroy$.pipe(first()),
+        destroy$: destroy$.pipe(first())
       });
     }).catch(reject);
 

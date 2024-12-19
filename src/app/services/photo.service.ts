@@ -1,7 +1,7 @@
 import { convertToQueryString } from '@app/utils/url.utils';
-import { PhotoResponse } from '@models/photo-response.model';
-import { PhotoSourceCache } from '@models/photo-source-cache.model';
-import { PhotoSource } from '@models/photo-source.model';
+import type { PhotoResponse } from '@models/photo-response.model';
+import type { PhotoSourceCache } from '@models/photo-source-cache.model';
+import type { PhotoSource } from '@models/photo-source.model';
 
 export class PhotoService<T> {
   readonly CACHE_KEY = 'pen_photos_service';
@@ -26,7 +26,7 @@ export class PhotoService<T> {
   updateState(response: T) {
     this.writeToCache({
       photoSource: this.photoSource,
-      response: response,
+      response,
       date: new Date(),
       state: {}
     });
@@ -35,9 +35,11 @@ export class PhotoService<T> {
   async loadPhotos(): Promise<PhotoResponse<T>> {
     const cachedData = this.readFromCache();
 
-    if (cachedData?.photoSource.params.query === this.photoSource.params.query
+    if (
+      cachedData?.photoSource.params.query === this.photoSource.params.query
       && cachedData?.photoSource.params.page === this.photoSource.params.page
-      && cachedData?.response) {
+      && cachedData?.response
+    ) {
       const lastUpdateDate = new Date(cachedData.date);
       const now = new Date();
       const lastUpdateDuration = (now.getTime() - lastUpdateDate.getTime()) / 1000 / 60;
@@ -73,7 +75,7 @@ export class PhotoService<T> {
 
     const init = {
       method: 'GET',
-      headers: headers,
+      headers,
       mode: 'cors',
       cache: 'no-store'
     } as RequestInit;

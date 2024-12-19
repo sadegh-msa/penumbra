@@ -1,6 +1,6 @@
-import { PexelsResponse } from '@models/pexels-response.model';
-import { PhotoSource } from '@models/photo-source.model';
-import { Photo } from '@models/photo.model';
+import type { PexelsResponse } from '@models/pexels-response.model';
+import type { PhotoSource } from '@models/photo-source.model';
+import type { Photo } from '@models/photo.model';
 
 const pexelsPhotoSource = {
   name: 'PEXELS',
@@ -14,7 +14,7 @@ const pexelsPhotoSource = {
     per_page: 100,
     page: 0
   },
-  extractPhotos: (response) => {
+  extractPhotos: response => {
     const photos: Photo[] = [];
     const responsePhotosLength = response.photos.length;
 
@@ -28,9 +28,9 @@ const pexelsPhotoSource = {
           return {
             id: photo.photographer_id,
             name: photo.photographer,
-            url: photo.photographer_url,
+            url: photo.photographer_url
           };
-        },
+        }
       });
     }
 
@@ -38,6 +38,4 @@ const pexelsPhotoSource = {
   }
 } as PhotoSource<PexelsResponse>;
 
-export {
-  pexelsPhotoSource
-};
+export { pexelsPhotoSource };

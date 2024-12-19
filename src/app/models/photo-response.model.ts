@@ -1,4 +1,4 @@
-import { Photo } from './photo.model';
+import type { Photo } from './photo.model';
 
 export interface PhotoResponse<T> {
   originalResponse: T;

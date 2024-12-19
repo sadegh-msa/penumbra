@@ -1,4 +1,10 @@
-import { attachStyle, attachTemplate, createCustomElement, fetchInput, injectChildrenInputs } from './custom-element.utils';
+import {
+  attachStyle,
+  attachTemplate,
+  createCustomElement,
+  fetchInput,
+  injectChildrenInputs
+} from './custom-element.utils';
 
 describe('Custom Element Utils', () => {
   let shadowRoot: ShadowRoot;

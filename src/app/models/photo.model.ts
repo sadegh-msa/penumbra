@@ -1,4 +1,4 @@
-import { Photographer } from './photographer.model';
+import type { Photographer } from './photographer.model';
 
 export interface Photo {
   tinySize: () => string;

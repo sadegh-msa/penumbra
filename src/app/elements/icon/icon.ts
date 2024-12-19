@@ -44,7 +44,7 @@ export default async function createIconElement() {
 
     attachStyle(shadowRoot, styleString);
 
-    input$.subscribe(async (data) => {
+    input$.subscribe(async data => {
       const { attribute, newValue } = data;
 
       if (attribute === 'icon' && newValue) {

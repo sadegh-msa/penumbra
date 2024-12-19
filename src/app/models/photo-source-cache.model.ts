@@ -1,8 +1,8 @@
-import { PhotoSource } from './photo-source.model';
+import type { PhotoSource } from './photo-source.model';
 
 export interface PhotoSourceCache<T> {
   photoSource: PhotoSource<T>;
-  response:T;
+  response: T;
   date: Date;
-  state: { [key: string]: string | number | unknown };
+  state: { [key: string]: string | number | unknown; };
 }

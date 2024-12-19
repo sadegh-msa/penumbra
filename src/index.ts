@@ -1,9 +1,9 @@
-import { PexelsResponse } from '@models/pexels-response.model';
+import type { PexelsResponse } from '@models/pexels-response.model';
 import './styles/main.scss';
 
 (async () => {
   try {
-    const { pexelsPhotoSource } = (await import('@app/photo-sources/pexels'));
+    const { pexelsPhotoSource } = await import('@app/photo-sources/pexels');
     const photoService = new (await import('@services/photo.service')).PhotoService<PexelsResponse>(pexelsPhotoSource);
 
     (await import('@elements/icon/icon')).default().then();
