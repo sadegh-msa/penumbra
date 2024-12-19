@@ -1,9 +1,11 @@
+import { beforeEach, describe, expect, it } from 'bun:test';
 import {
   attachStyle,
   attachTemplate,
   createCustomElement,
   fetchInput,
-  injectChildrenInputs
+  injectChildrenInputs,
+  INPUTS_FIELD
 } from './custom-element.utils';
 
 describe('Custom Element Utils', () => {
@@ -36,7 +38,7 @@ describe('Custom Element Utils', () => {
       const keyMap = injectChildrenInputs(shadowRoot, inputs);
       const host = shadowRoot.getRootNode()['host'];
       expect(Object.keys(keyMap)).toEqual(['key1', 'key2']);
-      expect(Object.values(host.penInputs)).toEqual(['value1', 'value2']);
+      expect(Object.values(host[INPUTS_FIELD])).toEqual(['value1', 'value2']);
     });
   });
 
@@ -45,7 +47,7 @@ describe('Custom Element Utils', () => {
       const inputs = { key1: 'value1' };
       injectChildrenInputs(shadowRoot, inputs);
       const host = shadowRoot.getRootNode()['host'];
-      const attributeValue = Object.keys(host.penInputs)[0];
+      const attributeValue = Object.keys(host[INPUTS_FIELD])[0];
       const fetchedValue = fetchInput(shadowRoot, attributeValue);
       expect(fetchedValue).toBe('value1');
     });

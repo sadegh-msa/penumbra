@@ -1,9 +1,17 @@
 import type { CustomHtmlElement, ElementCreator, ElementInput, ElementProperties } from '@models/element.model';
 import { BehaviorSubject, filter, first, Subject, takeUntil } from 'rxjs';
-import { v4 as uuidv4 } from 'uuid';
 
-const INPUTS_KEY = 'penInputs';
-const INPUTS_PREFIX = '@@';
+const INPUTS_FENCE = '@@';
+export const INPUTS_FIELD = `${INPUTS_FENCE}Inputs${INPUTS_FENCE}`;
+let inputIndex = 0;
+
+function getNewInputRef() {
+  return `${INPUTS_FENCE}${++inputIndex}${INPUTS_FENCE}`;
+}
+
+function isInputRef(key: string) {
+  return key.startsWith(INPUTS_FENCE) && key.endsWith(INPUTS_FENCE);
+}
 
 export function attachTemplate(shadowRoot: ShadowRoot, template: string) {
   const wrapperElement = document.createElement('div');
@@ -32,20 +40,20 @@ export function injectChildrenInputs(shadowRoot: ShadowRoot, inputs: Record<stri
 
   for (let i = 0; i < inputEntriesLength; i++) {
     const [key, value] = inputEntries[i];
-    const uuid = `${INPUTS_PREFIX}${uuidv4()}`;
-    keyMap[key] = uuid;
-    valueMap[uuid] = value;
+    const inputRef = getNewInputRef();
+    keyMap[key] = inputRef;
+    valueMap[inputRef] = value;
   }
 
-  shadowRoot.getRootNode()['host'][INPUTS_KEY] = valueMap;
+  shadowRoot.getRootNode()['host'][INPUTS_FIELD] = valueMap;
 
   return keyMap;
 }
 
 export function fetchInput<T = string>(node: HTMLElement | ShadowRoot, attributeValue: string) {
-  if (attributeValue.startsWith(INPUTS_PREFIX)) {
+  if (isInputRef(attributeValue)) {
     const parentNode = node.getRootNode()['host'];
-    return parentNode[INPUTS_KEY][attributeValue] as T;
+    return parentNode[INPUTS_FIELD][attributeValue] as T;
   }
 
   return attributeValue;
