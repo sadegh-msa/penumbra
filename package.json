@@ -1,12 +1,20 @@
 {
   "name": "penumbra",
   "version": "1.0.0",
-  "author": "",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/pesarkhobeee/focusClimb.git"
+  "author": "Mohammad Sadegh Athari",
+  "description": "Replace new tab page with a personal dashboard featuring , desired pictures and inspirations.",
+  "license": "MIT",
+  "scripts": {
+    "test": "jest",
+    "lint": "eslint src/ --ext .js,.ts",
+    "start": "vite --mode development",
+    "build": "vite build",
+    "clean": "rm -rf dist"
   },
-  "main": "index.js",
+  "dependencies": {
+    "handlebars": "^4.7.8",
+    "rxjs": "^7.8.1"
+  },
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@types/node": "^22.10.1",
@@ -22,22 +30,5 @@
     "typescript": "^5.7.2",
     "vite": "^6.0.3",
     "vite-tsconfig-paths": "^5.1.4"
-  },
-  "bugs": {
-    "url": "https://github.com/pesarkhobeee/focusClimb/issues"
-  },
-  "description": "Replace new tab page with a personal dashboard featuring , desired pictures and inspirations.",
-  "homepage": "https://github.com/pesarkhobeee/focusClimb#readme",
-  "license": "MIT",
-  "scripts": {
-    "test": "jest",
-    "lint": "eslint src/ --ext .js,.ts",
-    "start": "vite --mode development",
-    "build": "vite build",
-    "clean": "rm -rf dist"
-  },
-  "dependencies": {
-    "handlebars": "^4.7.8",
-    "rxjs": "^7.8.1"
   }
 }
