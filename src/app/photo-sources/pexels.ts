@@ -38,4 +38,4 @@ const pexelsPhotoSource = {
   }
 } as PhotoSource<PexelsResponse>;
 
-export { pexelsPhotoSource };
+export default pexelsPhotoSource;

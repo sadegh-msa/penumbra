@@ -6,8 +6,7 @@ import {
   injectChildrenInputs
 } from '@app/utils/custom-element.utils';
 import { compileTemplate } from '@app/utils/template.utils';
-import type { Photo } from '@models/photo.model';
-import type { PhotoService } from '@services/photo.service';
+import type { Photo, PhotoService } from '@models/photo.model';
 import templateString from './wallpaper.hbs?raw';
 import styleString from './wallpaper.scss?inline';
 

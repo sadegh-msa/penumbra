@@ -1,85 +1,83 @@
 import { convertToQueryString } from '@app/utils/url.utils';
-import type { PhotoResponse } from '@models/photo-response.model';
-import type { PhotoSourceCache } from '@models/photo-source-cache.model';
-import type { PhotoSource } from '@models/photo-source.model';
+import type { PhotoResponse, PhotoSource, PhotoSourceCache } from '@models/photo.model';
 
-export class PhotoService<T> {
-  readonly CACHE_KEY = 'pen_photos_service';
-  readonly CACHE_TIME_DURATION = 30; // Minutes
+export default function makeGetPhotoService<T>() {
+  const CACHE_KEY = 'pen_photos_service';
+  const CACHE_TIME_DURATION = 30; // Minutes
 
-  constructor(public photoSource: PhotoSource<T>) {
-  }
-
-  writeToCache(data: PhotoSourceCache<T>) {
-    localStorage.setItem(this.CACHE_KEY, JSON.stringify(data));
-  }
-
-  readFromCache(): PhotoSourceCache<T> {
-    const data = localStorage.getItem(this.CACHE_KEY);
+  const writeToCache = (data: PhotoSourceCache<T>) => {
+    localStorage.setItem(CACHE_KEY, JSON.stringify(data));
+  };
+  const readFromCache = (): PhotoSourceCache<T> => {
+    const data = localStorage.getItem(CACHE_KEY);
     return data ? JSON.parse(data) : null;
-  }
+  };
 
-  clearCache() {
-    localStorage.removeItem(this.CACHE_KEY);
-  }
+  return function getPhotoService(photoSource: PhotoSource<T>) {
+    const updateState = (response: T) => {
+      writeToCache({
+        photoSource,
+        response,
+        date: new Date(),
+        state: {}
+      });
+    };
 
-  updateState(response: T) {
-    this.writeToCache({
-      photoSource: this.photoSource,
-      response,
-      date: new Date(),
-      state: {}
-    });
-  }
+    const sendRequest = async (): Promise<T> => {
+      const queryString = convertToQueryString(photoSource.params);
+      const request = new Request(`${photoSource.url}?${queryString}`);
+      const headers = new Headers();
+      const photoHeaders = Object.keys(photoSource.headers);
+      const photoHeadersLength = photoHeaders.length;
 
-  async loadPhotos(): Promise<PhotoResponse<T>> {
-    const cachedData = this.readFromCache();
-
-    if (
-      cachedData?.photoSource.params.query === this.photoSource.params.query
-      && cachedData?.photoSource.params.page === this.photoSource.params.page
-      && cachedData?.response
-    ) {
-      const lastUpdateDate = new Date(cachedData.date);
-      const now = new Date();
-      const lastUpdateDuration = (now.getTime() - lastUpdateDate.getTime()) / 1000 / 60;
-
-      if (lastUpdateDuration <= this.CACHE_TIME_DURATION) {
-        return {
-          originalResponse: cachedData.response,
-          photos: this.photoSource.extractPhotos(cachedData.response)
-        };
+      for (let i = 0; i < photoHeadersLength; i++) {
+        const header = photoHeaders[i];
+        headers.append(header, photoSource.headers[header]);
       }
-    }
 
-    const response = await this.sendRequest();
-    this.updateState(response);
+      const init = {
+        method: 'GET',
+        headers,
+        mode: 'cors',
+        cache: 'no-store'
+      } as RequestInit;
+
+      return (await fetch(request, init)).json();
+    };
 
     return {
-      originalResponse: response,
-      photos: this.photoSource.extractPhotos(response)
+      photoSource,
+      clearCache: () => {
+        localStorage.removeItem(CACHE_KEY);
+      },
+      loadPhotos: async (): Promise<PhotoResponse<T>> => {
+        const cachedData = readFromCache();
+
+        if (
+          cachedData?.photoSource.params.query === photoSource.params.query
+          && cachedData?.photoSource.params.page === photoSource.params.page
+          && cachedData?.response
+        ) {
+          const lastUpdateDate = new Date(cachedData.date);
+          const now = new Date();
+          const lastUpdateDuration = (now.getTime() - lastUpdateDate.getTime()) / 1000 / 60;
+
+          if (lastUpdateDuration <= CACHE_TIME_DURATION) {
+            return {
+              originalResponse: cachedData.response,
+              photos: photoSource.extractPhotos(cachedData.response)
+            };
+          }
+        }
+
+        const response = await sendRequest();
+        updateState(response);
+
+        return {
+          originalResponse: response,
+          photos: photoSource.extractPhotos(response)
+        };
+      }
     };
-  }
-
-  async sendRequest(): Promise<T> {
-    const queryString = convertToQueryString(this.photoSource.params);
-    const request = new Request(`${this.photoSource.url}?${queryString}`);
-    const headers = new Headers();
-    const photoHeaders = Object.keys(this.photoSource.headers);
-    const photoHeadersLength = photoHeaders.length;
-
-    for (let i = 0; i < photoHeadersLength; i++) {
-      const header = photoHeaders[i];
-      headers.append(header, this.photoSource.headers[header]);
-    }
-
-    const init = {
-      method: 'GET',
-      headers,
-      mode: 'cors',
-      cache: 'no-store'
-    } as RequestInit;
-
-    return (await fetch(request, init)).json();
-  }
+  };
 }
