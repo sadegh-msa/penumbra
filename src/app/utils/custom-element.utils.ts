@@ -3,15 +3,23 @@ import { BehaviorSubject, filter, first, Subject, takeUntil } from 'rxjs';
 
 const INPUTS_FENCE = '@@';
 export const INPUTS_FIELD = `${INPUTS_FENCE}Inputs${INPUTS_FENCE}`;
-let inputIndex = 0;
 
-function getNewInputRef() {
-  return `${INPUTS_FENCE}${++inputIndex}${INPUTS_FENCE}`;
+function makeGetNewInputRef(inputsFence: string) {
+  let inputIndex = 0;
+
+  return function getNewInputRef() {
+    return `${inputsFence}${++inputIndex}${inputsFence}`;
+  };
 }
 
-function isInputRef(key: string) {
-  return key.startsWith(INPUTS_FENCE) && key.endsWith(INPUTS_FENCE);
+function makeIsInputRef(inputsFence: string) {
+  return function isInputRef(key: string) {
+    return key.startsWith(inputsFence) && key.endsWith(inputsFence);
+  };
 }
+
+const getNewInputRef = makeGetNewInputRef(INPUTS_FENCE);
+const isInputRef = makeIsInputRef(INPUTS_FENCE);
 
 export function attachTemplate(shadowRoot: ShadowRoot, template: string) {
   const wrapperElement = document.createElement('div');
