@@ -1,30 +1,56 @@
-import { attachStyle, attachTemplate, createCustomElement, fetchInput } from '@app/utils/custom-element.utils';
+import { attachStyle, attachTemplate, fetchInput } from '@app/utils/custom-element.utils';
 import { compileTemplate } from '@app/utils/template.utils';
 import type { Photographer } from '@models/photographer.model';
+import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
 import templateString from './paginator.hbs?raw';
 import styleString from './paginator.scss?inline';
 
 const template = compileTemplate(templateString);
 
 export default async function createPaginatorElement() {
-  const { init$, input$ } = await createCustomElement({
-    selector: 'pen-paginator',
-    attributes: ['photographer']
-  });
+  const SELECTOR = 'pen-paginator';
 
-  init$.subscribe(htmlElement => {
-    const shadowRoot = htmlElement.shadowRoot;
+  return new Promise(resolve => {
+    customElements.whenDefined(SELECTOR).then(resolve);
+    customElements.define(
+      SELECTOR,
+      class extends HTMLElement {
+        declare shadowRoot: ShadowRoot;
+        static observedAttributes = ['photographer'];
+        readonly init$ = new BehaviorSubject<boolean>(false);
+        readonly destroy$ = new Subject<void>();
 
-    attachStyle(shadowRoot, styleString);
+        constructor() {
+          super();
 
-    input$.subscribe(async data => {
-      const { attribute, newValue } = data;
+          const internals = this.attachInternals();
 
-      if (attribute === 'photographer' && newValue) {
-        const photographer = fetchInput<Photographer>(htmlElement, newValue);
+          if (!internals.shadowRoot) {
+            this.attachShadow({ mode: 'open' });
+          }
+        }
 
-        attachTemplate(shadowRoot, template({ photographer }));
+        connectedCallback() {
+          attachStyle(this.shadowRoot, styleString);
+          this.init$.next(true);
+        }
+
+        disconnectedCallback() {
+          this.destroy$.next();
+          this.destroy$.unsubscribe();
+        }
+
+        attributeChangedCallback(attribute: string, oldValue: string, newValue: string) {
+          this.init$.pipe(filter(v => v), takeUntil(this.destroy$))
+            .subscribe(async () => {
+              if (attribute === 'photographer' && newValue) {
+                const photographer = fetchInput<Photographer>(this, newValue);
+
+                attachTemplate(this.shadowRoot, template({ photographer }));
+              }
+            });
+        }
       }
-    });
+    );
   });
 }

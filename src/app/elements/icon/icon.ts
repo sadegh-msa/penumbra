@@ -1,4 +1,5 @@
-import { attachStyle, createCustomElement, fetchInput } from '@app/utils/custom-element.utils';
+import { attachStyle, fetchInput } from '@app/utils/custom-element.utils';
+import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
 import styleString from './icon.scss?inline';
 
 function getIconUrl(icon: string) {
@@ -14,13 +15,13 @@ async function loadIcon(shadowRoot: ShadowRoot, icon: string) {
     const response = await fetch(getIconUrl(icon));
 
     if (!response.ok) {
-      throw new Error(`Response status: ${response.status}`);
+      return Promise.reject(new Error(`Response status: ${response.status}`));
     }
 
     const svgString = await response.text();
 
     if (svgString.startsWith('<!')) {
-      throw new Error(`Error on fetching ${icon} icon`);
+      return Promise.reject(new Error(`Error on fetching ${icon} icon`));
     }
 
     const wrapperElement = document.createElement('div');
@@ -29,28 +30,53 @@ async function loadIcon(shadowRoot: ShadowRoot, icon: string) {
     svgElement.setAttribute('part', 'svg');
     shadowRoot.appendChild(svgElement);
   } catch (error) {
-    console.error(error.message);
+    console.error((error as Error).message);
   }
 }
 
 export default async function createIconElement() {
-  const { init$, input$ } = await createCustomElement({
-    selector: 'pen-icon',
-    attributes: ['icon']
-  });
+  const SELECTOR = 'pen-icon';
 
-  init$.subscribe(htmlElement => {
-    const shadowRoot = htmlElement.shadowRoot!;
+  return new Promise(resolve => {
+    customElements.whenDefined(SELECTOR).then(resolve);
+    customElements.define(
+      SELECTOR,
+      class extends HTMLElement {
+        declare shadowRoot: ShadowRoot;
+        static observedAttributes = ['icon'];
+        readonly init$ = new BehaviorSubject<boolean>(false);
+        readonly destroy$ = new Subject<void>();
 
-    attachStyle(shadowRoot, styleString);
+        constructor() {
+          super();
 
-    input$.subscribe(async data => {
-      const { attribute, newValue } = data;
+          const internals = this.attachInternals();
 
-      if (attribute === 'icon' && newValue) {
-        const icon = fetchInput(htmlElement, newValue);
-        await loadIcon(shadowRoot, icon);
+          if (!internals.shadowRoot) {
+            this.attachShadow({ mode: 'open' });
+          }
+        }
+
+        connectedCallback() {
+          attachStyle(this.shadowRoot, styleString);
+          this.init$.next(true);
+        }
+
+        disconnectedCallback() {
+          this.destroy$.next();
+          this.destroy$.unsubscribe();
+        }
+
+        attributeChangedCallback(attribute: string, oldValue: string, newValue: string) {
+          this.init$.pipe(filter(v => v), takeUntil(this.destroy$))
+            .subscribe(async () => {
+              if (attribute === 'icon' && newValue) {
+                const icon = fetchInput(this, newValue);
+                await loadIcon(this.shadowRoot, icon);
+              }
+            });
+        }
       }
-    });
+    );
   });
 }

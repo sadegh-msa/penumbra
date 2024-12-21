@@ -1,13 +1,7 @@
-import {
-  attachStyle,
-  attachTemplate,
-  createCustomElement,
-  fetchInput,
-  injectChildrenInputs
-} from '@app/utils/custom-element.utils';
+import { attachStyle, attachTemplate, fetchInput, injectChildrenInputs } from '@app/utils/custom-element.utils';
 import { compileTemplate } from '@app/utils/template.utils';
 import type { Photo, PhotoService } from '@models/photo.model';
-import { first, fromEvent, type Observable, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, first, fromEvent, type Observable, Subject, takeUntil } from 'rxjs';
 import templateString from './wallpaper.hbs?raw';
 import styleString from './wallpaper.scss?inline';
 
@@ -60,29 +54,54 @@ async function search<T>(photoService: PhotoService<T>, query: string) {
 }
 
 export default async function createWallpaperElement<T>(photoService: PhotoService<T>) {
-  const { destroy$, init$, input$ } = await createCustomElement({
-    selector: 'pen-wallpaper',
-    attributes: ['search']
-  });
+  const SELECTOR = 'pen-wallpaper';
 
-  init$.subscribe(htmlElement => {
-    const shadowRoot = htmlElement.shadowRoot!;
+  return new Promise(resolve => {
+    customElements.whenDefined(SELECTOR).then(resolve);
+    customElements.define(
+      SELECTOR,
+      class extends HTMLElement {
+        declare shadowRoot: ShadowRoot;
+        static observedAttributes = ['search'];
+        readonly init$ = new BehaviorSubject<boolean>(false);
+        readonly destroy$ = new Subject<void>();
 
-    attachStyle(shadowRoot, styleString);
+        constructor() {
+          super();
 
-    input$.subscribe(async data => {
-      const { attribute, newValue } = data;
+          const internals = this.attachInternals();
 
-      if (attribute === 'search' && newValue) {
-        const searchQuery = fetchInput(htmlElement, newValue);
-        const photo = await search(photoService, searchQuery);
+          if (!internals.shadowRoot) {
+            this.attachShadow({ mode: 'open' });
+          }
+        }
 
-        if (photo) {
-          const inputs = injectChildrenInputs(shadowRoot, { photographer: photo.photographer() });
-          attachTemplate(shadowRoot, template(inputs));
-          updateWallpaper(shadowRoot, photo, destroy$);
+        connectedCallback() {
+          attachStyle(this.shadowRoot, styleString);
+          this.init$.next(true);
+        }
+
+        disconnectedCallback() {
+          this.destroy$.next();
+          this.destroy$.unsubscribe();
+        }
+
+        attributeChangedCallback(attribute: string, oldValue: string, newValue: string) {
+          this.init$.pipe(filter(v => v), takeUntil(this.destroy$))
+            .subscribe(async () => {
+              if (attribute === 'search' && newValue) {
+                const searchQuery = fetchInput(this, newValue);
+                const photo = await search(photoService, searchQuery);
+
+                if (photo) {
+                  const inputs = injectChildrenInputs(this.shadowRoot, { photographer: photo.photographer() });
+                  attachTemplate(this.shadowRoot, template(inputs));
+                  updateWallpaper(this.shadowRoot, photo, this.destroy$);
+                }
+              }
+            });
         }
       }
-    });
+    );
   });
 }

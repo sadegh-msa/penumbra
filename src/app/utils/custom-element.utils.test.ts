@@ -1,12 +1,5 @@
 import { beforeEach, describe, expect, it } from 'bun:test';
-import {
-  attachStyle,
-  attachTemplate,
-  createCustomElement,
-  fetchInput,
-  injectChildrenInputs,
-  INPUTS_FIELD
-} from './custom-element.utils';
+import { attachStyle, attachTemplate, fetchInput, injectChildrenInputs, INPUTS_FIELD } from './custom-element.utils';
 
 describe('Custom Element Utils', () => {
   let shadowRoot: ShadowRoot;
@@ -56,19 +49,6 @@ describe('Custom Element Utils', () => {
       const attributeValue = 'someValue';
       const fetchedValue = fetchInput(shadowRoot, attributeValue);
       expect(fetchedValue).toBe(attributeValue);
-    });
-  });
-
-  describe('createCustomElement', () => {
-    it('should create a custom element and resolve the promise', async () => {
-      const customElement = {
-        selector: 'custom-element',
-        attributes: ['attr1', 'attr2']
-      };
-      const elementCreator = await createCustomElement(customElement);
-      expect(elementCreator).toHaveProperty('init$');
-      expect(elementCreator).toHaveProperty('input$');
-      expect(elementCreator).toHaveProperty('destroy$');
     });
   });
 });

@@ -1,9 +1,4 @@
-import {
-  attachStyle,
-  attachTemplate,
-  createCustomElement,
-  injectChildrenInputs
-} from '@app/utils/custom-element.utils';
+import { attachStyle, attachTemplate, injectChildrenInputs } from '@app/utils/custom-element.utils';
 import { compileTemplate } from '@app/utils/template.utils';
 import templateString from './app.hbs?raw';
 import styleString from './app.scss?inline';
@@ -11,15 +6,31 @@ import styleString from './app.scss?inline';
 const template = compileTemplate(templateString);
 
 export default async function createAppElement() {
-  const { init$ } = await createCustomElement({
-    selector: 'pen-app'
-  });
+  const SELECTOR = 'pen-app';
 
-  init$.subscribe(htmlElement => {
-    const shadowRoot = htmlElement.shadowRoot;
-    const inputs = injectChildrenInputs(shadowRoot, { search: 'landscape' });
+  return new Promise(resolve => {
+    customElements.whenDefined(SELECTOR).then(resolve);
+    customElements.define(
+      SELECTOR,
+      class extends HTMLElement {
+        declare shadowRoot: ShadowRoot;
 
-    attachStyle(shadowRoot, styleString);
-    attachTemplate(shadowRoot, template(inputs));
+        constructor() {
+          super();
+
+          const internals = this.attachInternals();
+
+          if (!internals.shadowRoot) {
+            this.attachShadow({ mode: 'open' });
+          }
+        }
+
+        connectedCallback() {
+          const inputs = injectChildrenInputs(this.shadowRoot, { search: 'landscape' });
+          attachStyle(this.shadowRoot, styleString);
+          attachTemplate(this.shadowRoot, template(inputs));
+        }
+      }
+    );
   });
 }
