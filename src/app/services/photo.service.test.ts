@@ -1,5 +1,5 @@
 import makeGetPhotoService from '@app/services/photo.service';
-import type { PhotoResponse, PhotoService, PhotoSource } from '@models/photo.model';
+import type { Photo, PhotoResponse, PhotoService, PhotoSource } from '@models/photo.model';
 import { beforeEach, describe, expect, it, mock } from 'bun:test';
 import type { PexelsResponse } from 'src/app/models/pexels-response.model';
 
@@ -15,14 +15,15 @@ describe('Photo Service', () => {
       headers: { 'Authorization': 'Bearer test-token' },
       params: { query: 'test', page: 1 },
       extractPhotos: mock().mockReturnValue([{
-        tinySize: () => 'tiny.jpg',
-        largeSize: () => 'large.jpg',
+        tinyUrl: () => 'tiny.jpg',
+        largeUrl: () => 'large.jpg',
+        averageColor: () => '#000000',
         photographer: () => ({
           id: 123,
           name: 'John Doe',
           url: 'https://api.example.com/photographer/john_doe'
         })
-      }])
+      } as Photo])
     };
 
     getPhotoService = makeGetPhotoService<PexelsResponse>()(photoSource);
@@ -37,8 +38,9 @@ describe('Photo Service', () => {
     const result: PhotoResponse<PexelsResponse> = await getPhotoService.loadPhotos();
 
     expect(result.photos).toHaveLength(1);
-    expect(result.photos[0].tinySize()).toBe('tiny.jpg');
-    expect(result.photos[0].largeSize()).toBe('large.jpg');
+    expect(result.photos[0].tinyUrl()).toBe('tiny.jpg');
+    expect(result.photos[0].largeUrl()).toBe('large.jpg');
+    expect(result.photos[0].averageColor()).toBe('#000000');
     expect(result.photos[0].photographer()).toMatchObject({
       id: 123,
       name: 'John Doe',
@@ -65,8 +67,9 @@ describe('Photo Service', () => {
     const result: PhotoResponse<PexelsResponse> = await getPhotoService.loadPhotos();
 
     expect(result.photos).toHaveLength(1);
-    expect(result.photos[0].tinySize()).toBe('tiny.jpg');
-    expect(result.photos[0].largeSize()).toBe('large.jpg');
+    expect(result.photos[0].tinyUrl()).toBe('tiny.jpg');
+    expect(result.photos[0].largeUrl()).toBe('large.jpg');
+    expect(result.photos[0].averageColor()).toBe('#000000');
     expect(result.photos[0].photographer()).toMatchObject({
       id: 123,
       name: 'John Doe',

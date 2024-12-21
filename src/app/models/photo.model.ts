@@ -1,8 +1,9 @@
 import type { Photographer } from './photographer.model';
 
 export interface Photo {
-  tinySize: () => string;
-  largeSize: () => string;
+  tinyUrl: () => string;
+  largeUrl: () => string;
+  averageColor: () => string;
   photographer: () => Photographer;
 }
 

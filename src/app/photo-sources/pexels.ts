@@ -17,13 +17,16 @@ const pexelsPhotoSource = {
   extractPhotos: response => {
     const photos: Photo[] = [];
     const responsePhotosLength = response.photos.length;
+    const windowHeight = window.innerHeight;
+    const windowWidth = window.innerWidth;
 
     for (let i = 0; i < responsePhotosLength; i++) {
       const photo = response.photos[i];
 
       photos.push({
-        tinySize: () => `${photo.src.original}?auto=compress&cs=tinysrgb&&fit=crop&h=54&w=96`,
-        largeSize: () => `${photo.src.original}?fit=crop&h=1080&w=1920`,
+        tinyUrl: () => `${photo.src.original}?auto=compress&cs=tinysrgb&&fit=crop&h=54&w=96`,
+        largeUrl: () => `${photo.src.original}?fit=crop&h=${windowHeight}&w=${windowWidth}`,
+        averageColor: () => photo.avg_color,
         photographer: () => {
           return {
             id: photo.photographer_id,

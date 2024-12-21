@@ -7,26 +7,41 @@ import {
 } from '@app/utils/custom-element.utils';
 import { compileTemplate } from '@app/utils/template.utils';
 import type { Photo, PhotoService } from '@models/photo.model';
+import { first, fromEvent, type Observable, takeUntil } from 'rxjs';
 import templateString from './wallpaper.hbs?raw';
 import styleString from './wallpaper.scss?inline';
 
 const template = compileTemplate(templateString);
 
-function updateBackground(shadowRoot: ShadowRoot, photo: Photo) {
-  const style = `
-      :host {
-        .wallpaper::before {
-          background-image: url(${photo.tinySize()});
-        }
+function updateWallpaper(shadowRoot: ShadowRoot, photo: Photo, destroy$: Observable<void>) {
+  const wallpaperElement = shadowRoot.getElementById('wallpaper');
 
-        .wallpaper::after {
-          background-image: url(${photo.largeSize()});
-          opacity: 1;
-        }
-      }
-    `;
+  if (!wallpaperElement) {
+    return;
+  }
 
-  attachStyle(shadowRoot, style);
+  wallpaperElement.innerHTML = '';
+  wallpaperElement.style.backgroundColor = photo.averageColor();
+
+  const height = window.innerHeight;
+  const width = window.innerWidth;
+  const tinyImage = new Image(width, height);
+  tinyImage.src = photo.tinyUrl();
+  wallpaperElement.appendChild(tinyImage);
+
+  fromEvent(tinyImage, 'load')
+    .pipe(first(), takeUntil(destroy$))
+    .subscribe(() => {
+      tinyImage.style.opacity = '1';
+
+      const largeImage = new Image(width, height);
+      largeImage.src = photo.largeUrl();
+      wallpaperElement.appendChild(largeImage);
+
+      fromEvent(largeImage, 'load')
+        .pipe(first(), takeUntil(destroy$))
+        .subscribe(() => largeImage.style.opacity = '1');
+    });
 }
 
 async function search<T>(photoService: PhotoService<T>, query: string) {
@@ -45,7 +60,7 @@ async function search<T>(photoService: PhotoService<T>, query: string) {
 }
 
 export default async function createWallpaperElement<T>(photoService: PhotoService<T>) {
-  const { init$, input$ } = await createCustomElement({
+  const { destroy$, init$, input$ } = await createCustomElement({
     selector: 'pen-wallpaper',
     attributes: ['search']
   });
@@ -64,8 +79,8 @@ export default async function createWallpaperElement<T>(photoService: PhotoServi
 
         if (photo) {
           const inputs = injectChildrenInputs(shadowRoot, { photographer: photo.photographer() });
-          updateBackground(shadowRoot, photo);
           attachTemplate(shadowRoot, template(inputs));
+          updateWallpaper(shadowRoot, photo, destroy$);
         }
       }
     });
