@@ -1,22 +1,54 @@
 $shadow: 1px 1px 3px black;
 
 :host {
-  @apply flex items-center;
+  @apply flex items-center justify-between;
   @apply px-4 py-3 rounded-md;
+
+  pen-icon::part(svg) {
+    @apply transition-[filter];
+  }
 
   .photographer {
     @apply flex items-center gap-2;
     @apply font-medium text-white;
     @apply transition-[text-shadow];
-    text-shadow: $shadow;
 
-    pen-icon::part(svg) {
-      @apply transition-[filter] fill-white;
-      filter: drop-shadow($shadow);
+    &:hover, &:active {
+      @apply text-primary;
+    }
+
+    &:not(:active) {
+      text-shadow: $shadow;
+
+      pen-icon::part(svg) {
+        filter: drop-shadow($shadow);
+      }
     }
   }
 
   a {
     @apply no-underline;
+  }
+
+  menu {
+    @apply list-none p-0 m-0;
+    @apply flex gap-2;
+
+    li {
+      button {
+        @apply bg-transparent border-0 text-white;
+        @apply cursor-pointer;
+
+        &:hover, &:active {
+          @apply text-primary;
+        }
+
+        &:not(:active) {
+          pen-icon::part(svg) {
+            filter: drop-shadow($shadow);
+          }
+        }
+      }
+    }
   }
 }

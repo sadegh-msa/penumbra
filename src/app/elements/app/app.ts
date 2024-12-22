@@ -1,9 +1,9 @@
 import { attachStyle, attachTemplate, injectChildrenInputs } from '@app/utils/custom-element.utils';
-import { compileTemplate } from '@app/utils/template.utils';
-import templateString from './app.hbs?raw';
+import { createTemplate } from '@app/utils/template.utils';
+import templateString from 'src/app/elements/app/app.html?raw';
 import styleString from './app.scss?inline';
 
-const template = compileTemplate(templateString);
+const template = createTemplate(templateString);
 
 export default async function createAppElement() {
   const SELECTOR = 'pen-app';
@@ -26,9 +26,14 @@ export default async function createAppElement() {
         }
 
         connectedCallback() {
-          const inputs = injectChildrenInputs(this.shadowRoot, { search: 'landscape' });
           attachStyle(this.shadowRoot, styleString);
-          attachTemplate(this.shadowRoot, template(inputs));
+          attachTemplate(this.shadowRoot, template);
+          const wallpaperElement = this.shadowRoot.querySelector('pen-wallpaper');
+
+          if (wallpaperElement) {
+            const inputs = injectChildrenInputs(this.shadowRoot, { search: 'universe' });
+            wallpaperElement.setAttribute('search', inputs.search);
+          }
         }
       }
     );

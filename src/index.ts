@@ -4,8 +4,8 @@ import './styles/main.scss';
 (async () => {
   try {
     const pexelsPhotoSource = (await import('@app/photo-sources/pexels')).default;
-    const getPhotoService = (await import('@services/photo.service')).default<PexelsResponse>();
-    const photoService = getPhotoService(pexelsPhotoSource);
+    const photoService = new (await import('@services/photo.service'))
+      .default<PexelsResponse>(pexelsPhotoSource);
 
     (await import('@elements/icon/icon')).default().then();
     (await import('@elements/paginator/paginator')).default().then();

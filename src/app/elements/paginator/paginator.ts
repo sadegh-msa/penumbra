@@ -1,11 +1,12 @@
 import { attachStyle, attachTemplate, fetchInput } from '@app/utils/custom-element.utils';
-import { compileTemplate } from '@app/utils/template.utils';
+import { createTemplate } from '@app/utils/template.utils';
+import templateString from '@elements/paginator/paginator.html?raw';
 import type { Photographer } from '@models/photographer.model';
-import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
-import templateString from './paginator.hbs?raw';
-import styleString from './paginator.scss?inline';
+import type { Subscription } from 'rxjs';
+import { BehaviorSubject, filter, fromEvent, Subject, takeUntil } from 'rxjs';
+import style from './paginator.scss?inline';
 
-const template = compileTemplate(templateString);
+const template = createTemplate(templateString);
 
 export default async function createPaginatorElement() {
   const SELECTOR = 'pen-paginator';
@@ -16,9 +17,11 @@ export default async function createPaginatorElement() {
       SELECTOR,
       class extends HTMLElement {
         declare shadowRoot: ShadowRoot;
-        static observedAttributes = ['photographer'];
+        static observedAttributes = ['photographer', 'photoindex'];
         readonly init$ = new BehaviorSubject<boolean>(false);
         readonly destroy$ = new Subject<void>();
+        photographerSub?: Subscription;
+        photographerElement: HTMLAnchorElement | null;
 
         constructor() {
           super();
@@ -31,7 +34,9 @@ export default async function createPaginatorElement() {
         }
 
         connectedCallback() {
-          attachStyle(this.shadowRoot, styleString);
+          attachStyle(this.shadowRoot, style);
+          attachTemplate(this.shadowRoot, template);
+          this.photographerElement = this.shadowRoot.querySelector('a#paginator-photographer');
           this.init$.next(true);
         }
 
@@ -44,10 +49,36 @@ export default async function createPaginatorElement() {
           this.init$.pipe(filter(v => v), takeUntil(this.destroy$))
             .subscribe(async () => {
               if (attribute === 'photographer' && newValue) {
-                const photographer = fetchInput<Photographer>(this, newValue);
-
-                attachTemplate(this.shadowRoot, template({ photographer }));
+                const photographer$ = fetchInput<Subject<Photographer>>(this, newValue);
+                this.settlePhotographerHandler(photographer$);
               }
+
+              if (attribute === 'photoindex' && newValue) {
+                const photoIndex$ = fetchInput<BehaviorSubject<number>>(this, newValue);
+                this.settlePaginationHandlers(photoIndex$);
+              }
+            });
+        }
+
+        settlePaginationHandlers(photoIndex$: BehaviorSubject<number>) {
+          fromEvent(this.shadowRoot.getElementById('paginator-next')!, 'click')
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => photoIndex$.next(photoIndex$.value + 1));
+
+          fromEvent(this.shadowRoot.getElementById('paginator-previous')!, 'click')
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(() => photoIndex$.next(photoIndex$.value - 1));
+        }
+
+        settlePhotographerHandler(photographer$: Subject<Photographer>) {
+          this.photographerSub?.unsubscribe();
+          this.photographerSub = photographer$
+            .pipe(takeUntil(this.destroy$))
+            .subscribe(photographer => {
+              const element = this.photographerElement!;
+              element.href = photographer.url;
+              element.title = `Photographer: ${photographer.name}`;
+              element.querySelector('span')!.textContent = photographer.name;
             });
         }
       }

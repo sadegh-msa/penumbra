@@ -11,7 +11,7 @@ const pexelsPhotoSource = {
   },
   params: {
     query: 'nature',
-    per_page: 100,
+    per_page: 20,
     page: 0
   },
   extractPhotos: response => {
