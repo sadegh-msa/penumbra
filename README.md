@@ -1,14 +1,14 @@
-# FocusClimb
+# Penumbra
 
-Replace new tab page with a personal dashboard featuring , desired pictures and inspirations.
+Replace the new tab of Firefox/Chrome with a personal dashboard featuring, desired pictures and inspirations.
 
 ## Development
 
 ```
-git clone git@github.com:pesarkhobeee/focusClimb.git
-cd focusClimb
-npm install
-npm run build
+git clone git@github.com:sadegh-msa/penumbra.git
+cd penumbra
+bun install
+bun run build
 ```
 ### Firefox
 To develop and test this plugin on Firefox, inside of address bar go to
