@@ -1,7 +1,7 @@
-import { attachStyle, attachTemplate, fetchInput } from '@app/utils/custom-element.util';
-import { createTemplate } from '@app/utils/template.util';
 import templateString from '@elements/paginator/paginator.html?raw';
 import type { Photographer } from '@models/photographer.model';
+import { attachStyle, attachTemplate, fetchInput } from '@utils/custom-element.util';
+import { createTemplate } from '@utils/template.util';
 import type { Subscription } from 'rxjs';
 import { BehaviorSubject, filter, fromEvent, Subject, takeUntil } from 'rxjs';
 import style from './paginator.scss?inline';

@@ -1,7 +1,7 @@
-import { createHeaders, createQueryString } from '@app/utils/url.util';
 import type { Photo, PhotoStock } from '@models/photo.model';
 import StockCacheService from '@services/stock-cache.service';
 import StockKeyService from '@services/stock-key.service';
+import { createHeaders, createQueryString } from '@utils/url.util';
 import type { PixabayResponse } from './pixabay-response.model';
 
 export default class PixabayStock implements PhotoStock {

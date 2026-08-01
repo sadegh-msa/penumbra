@@ -1,8 +1,8 @@
-import { attachStyle, attachTemplate, fetchInput, injectChildrenInputs } from '@app/utils/custom-element.util';
-import { createTemplate } from '@app/utils/template.util';
 import templateString from '@elements/wallpaper/wallpaper.html?raw';
 import type { Photo, PhotoStock } from '@models/photo.model';
 import type { Photographer } from '@models/photographer.model';
+import { attachStyle, attachTemplate, fetchInput, injectChildrenInputs } from '@utils/custom-element.util';
+import { createTemplate } from '@utils/template.util';
 import { BehaviorSubject, filter, first, fromEvent, Subject, skip, takeUntil } from 'rxjs';
 import styleString from './wallpaper.scss?inline';
 

@@ -2,7 +2,7 @@ import './style.scss';
 
 (async () => {
   try {
-    const PixabayPhotoStock = (await import('@app/photo-stocks/pixabay/pixabay')).default;
+    const PixabayPhotoStock = (await import('@photo-stocks/pixabay/pixabay')).default;
     const photoStock = new PixabayPhotoStock();
 
     (await import('@elements/icon/icon')).default().then();

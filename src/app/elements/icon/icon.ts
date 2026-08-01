@@ -1,4 +1,4 @@
-import { attachStyle, fetchInput } from '@app/utils/custom-element.util';
+import { attachStyle, fetchInput } from '@utils/custom-element.util';
 import { BehaviorSubject, filter, Subject, takeUntil } from 'rxjs';
 import styleString from './icon.scss?inline';
 

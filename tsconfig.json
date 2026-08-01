@@ -28,7 +28,8 @@
       "@models/*": ["./src/app/models/*"],
       "@photo-stocks/*": ["./src/app/photo-stocks/*"],
       "@reactive/*": ["./src/app/reactive/*"],
-      "@services/*": ["./src/app/services/*"]
+      "@services/*": ["./src/app/services/*"],
+      "@utils/*": ["./src/app/utils/*"]
     },
     "rootDir": "./src",
     "skipLibCheck": true,
