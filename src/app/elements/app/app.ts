@@ -1,5 +1,5 @@
-import { attachStyle, attachTemplate, injectChildrenInputs } from '@app/utils/custom-element.utils';
-import { createTemplate } from '@app/utils/template.utils';
+import { attachStyle, attachTemplate, injectChildrenInputs } from '@app/utils/custom-element.util';
+import { createTemplate } from '@app/utils/template.util';
 import templateString from 'src/app/elements/app/app.html?raw';
 import styleString from './app.scss?inline';
 

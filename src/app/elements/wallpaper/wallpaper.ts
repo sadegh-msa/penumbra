@@ -1,5 +1,5 @@
-import { attachStyle, attachTemplate, fetchInput, injectChildrenInputs } from '@app/utils/custom-element.utils';
-import { createTemplate } from '@app/utils/template.utils';
+import { attachStyle, attachTemplate, fetchInput, injectChildrenInputs } from '@app/utils/custom-element.util';
+import { createTemplate } from '@app/utils/template.util';
 import type { Photo, PhotoService } from '@models/photo.model';
 import type { Photographer } from '@models/photographer.model';
 import { BehaviorSubject, filter, first, fromEvent, skip, Subject, takeUntil } from 'rxjs';

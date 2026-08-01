@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'bun:test';
-import { convertToQueryString } from './url.utils';
+import { convertToQueryString } from './url.util';
 
 describe('URL Utils', () => {
   describe('convertToQueryString', () => {

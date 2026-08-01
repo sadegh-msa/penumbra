@@ -1,4 +1,4 @@
-import { convertToQueryString } from '@app/utils/url.utils';
+import { convertToQueryString } from '@app/utils/url.util';
 import type { PhotoResponse, PhotoSource, PhotoSourceCache } from '@models/photo.model';
 
 export default class PhotoService<T> {

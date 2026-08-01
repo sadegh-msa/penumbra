@@ -1,5 +1,5 @@
-import { attachStyle, attachTemplate, fetchInput } from '@app/utils/custom-element.utils';
-import { createTemplate } from '@app/utils/template.utils';
+import { attachStyle, attachTemplate, fetchInput } from '@app/utils/custom-element.util';
+import { createTemplate } from '@app/utils/template.util';
 import templateString from '@elements/paginator/paginator.html?raw';
 import type { Photographer } from '@models/photographer.model';
 import type { Subscription } from 'rxjs';

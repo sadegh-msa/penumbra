@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'bun:test';
-import { createTemplate } from './template.utils';
+import { createTemplate } from './template.util';
 
 describe('Template Utils', () => {
   describe('createTemplate', () => {
