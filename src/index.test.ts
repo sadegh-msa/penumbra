@@ -1,6 +1,6 @@
 import { describe, expect, it, mock, spyOn } from 'bun:test';
 
-mock('./styles/main.scss', () => ({}));
+mock('./style.scss', () => ({}));
 
 describe('index', () => {
   it('should be a valid module entry point', async () => {

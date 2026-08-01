@@ -1,36 +1,59 @@
-
 :host {
-  @apply flex justify-center;
+  display: flex;
+  justify-content: center;
 
   #wallpaper {
-    @apply relative content-[''] left-0 top-0 overflow-hidden;
-    @apply pointer-events-none;
-    @apply h-dvh w-dvw;
-    @apply transition-[background-color] duration-500 bg-black;
+    position: relative;
+    content: '';
+    left: 0;
+    top: 0;
+    overflow: hidden;
+    pointer-events: none;
+    height: 100dvh;
+    width: 100dvw;
+    transition-property: background-color;
+    transition-duration: 500ms;
+    background-color: #000;
 
     img {
-      @apply absolute left-0 top-0 h-auto w-full;
-      @apply bg-transparent bg-center bg-no-repeat bg-cover;
-      @apply opacity-0 transition-opacity duration-500;
+      position: absolute;
+      left: 0;
+      top: 0;
+      height: auto;
+      width: 100%;
+      background-color: transparent;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-size: cover;
+      opacity: 0;
+      transition-property: opacity;
+      transition-duration: 500ms;
     }
 
     :first-child {
-      @apply z-[1];
+      z-index: 1;
       filter: blur(2rem);
     }
 
     :last-child {
-      @apply z-[2];
+      z-index: 2;
     }
   }
 
   pen-paginator {
-    @apply absolute bottom-0 z-20;
-    @apply mx-auto my-6 w-[95%];
-    @apply transition-colors;
+    position: absolute;
+    bottom: 0;
+    z-index: 20;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 1.5rem;
+    margin-bottom: 1.5rem;
+    width: 95%;
+    transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
 
     &:hover {
-      @apply shadow-lg bg-black bg-opacity-40;
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.06);
+      background-color: rgba(0, 0, 0, 0.4);
       backdrop-filter: blur(1rem);
     }
   }

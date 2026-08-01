@@ -1,6 +1,4 @@
-/* eslint-disable no-undef */
 import path from 'path';
-import tailwindcss from 'tailwindcss';
 import { defineConfig } from 'vite';
 import tsconfigPaths from 'vite-tsconfig-paths';
 
@@ -31,9 +29,6 @@ export default defineConfig({
         api: 'modern-compiler',
         loadPaths: [path.resolve(__dirname, 'src/styles')],
       },
-    },
-    postcss: {
-      plugins: [tailwindcss()],
     },
   },
   plugins: [
