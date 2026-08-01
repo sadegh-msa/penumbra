@@ -7,29 +7,19 @@ export interface Photo {
   photographer: () => Photographer;
 }
 
-export interface PhotoResponse<T> {
-  originalResponse: T;
-  photos: Photo[];
+export interface PhotoStock {
+  info: { name: string; label: string; url: string; };
+  page: number;
+  query: string;
+  setParam: (param: string, value: boolean | number | string) => void;
+  getParam: (param: string) => boolean | number | string;
+  clearCache: () => void;
+  loadPhotos: () => Promise<Photo[]>;
 }
 
-export interface PhotoSource<T> {
-  name: string;
-  label: string;
-  url: string;
-  headers: { [key: string]: string; };
-  params: { [key: string]: string | number | unknown; };
-  extractPhotos: (r: T) => Photo[];
-}
-
-export interface PhotoSourceCache<T> {
-  photoSource: PhotoSource<T>;
+export interface PhotoStockCache<T> {
+  query: string;
   response: T;
   date: Date;
-  state: { [key: string]: string | number | unknown; };
-}
-
-export interface PhotoService<T> {
-  photoSource: PhotoSource<T>;
-  clearCache: () => void;
-  loadPhotos: () => Promise<PhotoResponse<T>>;
+  state: Record<string, string | number | unknown>;
 }

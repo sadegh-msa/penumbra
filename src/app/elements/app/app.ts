@@ -31,7 +31,7 @@ export default async function createAppElement() {
           const wallpaperElement = this.shadowRoot.querySelector('pen-wallpaper');
 
           if (wallpaperElement) {
-            const inputs = injectChildrenInputs(this.shadowRoot, { search: 'universe' });
+            const inputs = injectChildrenInputs(this.shadowRoot, { search: 'garden' });
             wallpaperElement.setAttribute('search', inputs.search);
           }
         }

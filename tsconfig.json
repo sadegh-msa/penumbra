@@ -30,6 +30,7 @@
       "@models/*": ["./src/app/models/*"],
       "@reactive/*": ["./src/app/reactive/*"],
       "@services/*": ["./src/app/services/*"],
+      "@photo-stocks/*": ["src/app/photo-stocks/*"],
       "@app/*": ["./src/app/*"],
     },
     "rootDir": "./src",

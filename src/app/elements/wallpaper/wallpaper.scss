@@ -9,7 +9,7 @@
     @apply transition-[background-color] duration-500 bg-black;
 
     img {
-      @apply absolute left-0 top-0 h-full w-full;
+      @apply absolute left-0 top-0 h-auto w-full;
       @apply bg-transparent bg-center bg-no-repeat bg-cover;
       @apply opacity-0 transition-opacity duration-500;
     }

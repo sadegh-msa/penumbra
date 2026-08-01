@@ -17,7 +17,7 @@ export default async function createPaginatorElement() {
       SELECTOR,
       class extends HTMLElement {
         declare shadowRoot: ShadowRoot;
-        static observedAttributes = ['photographer', 'photoindex'];
+        static observedAttributes = ['photographer', 'photo-index'];
         readonly init$ = new BehaviorSubject<boolean>(false);
         readonly destroy$ = new Subject<void>();
         photographerSub?: Subscription;
@@ -53,7 +53,7 @@ export default async function createPaginatorElement() {
                 this.settlePhotographerHandler(photographer$);
               }
 
-              if (attribute === 'photoindex' && newValue) {
+              if (attribute === 'photo-index' && newValue) {
                 const photoIndex$ = fetchInput<BehaviorSubject<number>>(this, newValue);
                 this.settlePaginationHandlers(photoIndex$);
               }

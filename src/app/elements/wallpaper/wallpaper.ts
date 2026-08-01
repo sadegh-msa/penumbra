@@ -1,14 +1,14 @@
 import { attachStyle, attachTemplate, fetchInput, injectChildrenInputs } from '@app/utils/custom-element.util';
 import { createTemplate } from '@app/utils/template.util';
-import type { Photo, PhotoService } from '@models/photo.model';
+import templateString from '@elements/wallpaper/wallpaper.html?raw';
+import type { Photo, PhotoStock } from '@models/photo.model';
 import type { Photographer } from '@models/photographer.model';
 import { BehaviorSubject, filter, first, fromEvent, skip, Subject, takeUntil } from 'rxjs';
-import templateString from 'src/app/elements/wallpaper/wallpaper.html?raw';
 import styleString from './wallpaper.scss?inline';
 
 const template = createTemplate(templateString);
 
-export default async function createWallpaperElement<T>(photoService: PhotoService<T>) {
+export default async function createWallpaperElement(photoStock: PhotoStock) {
   const SELECTOR = 'pen-wallpaper';
 
   return new Promise(resolve => {
@@ -61,14 +61,14 @@ export default async function createWallpaperElement<T>(photoService: PhotoServi
                   } else {
                     --page;
                   }
-                  const perPage = photoService.photoSource.params.per_page as number;
+                  const perPage = photoStock.getParam('perPage') as number;
                   nextIndex = perPage - 1;
                 } else if (index >= photosLength) {
                   ++page;
                 }
 
                 try {
-                  photoService.clearCache();
+                  photoStock.clearCache();
                   this.photos = await this.search(this.searchQuery, page);
                   this.photoIndex$.next(nextIndex);
                 } catch (error) {
@@ -99,11 +99,11 @@ export default async function createWallpaperElement<T>(photoService: PhotoServi
           if (paginatorElement) {
             const inputs = injectChildrenInputs(this.shadowRoot, {
               photographer: this.photographer$,
-              photoindex: this.photoIndex$
+              photoIndex: this.photoIndex$
             });
 
             paginatorElement.setAttribute('photographer', inputs.photographer);
-            paginatorElement.setAttribute('photoindex', inputs.photoindex);
+            paginatorElement.setAttribute('photo-index', inputs.photoIndex);
           }
 
           this.init$.next(true);
@@ -134,40 +134,48 @@ export default async function createWallpaperElement<T>(photoService: PhotoServi
           wallpaperElement.innerHTML = '';
           wallpaperElement.style.backgroundColor = photo.averageColor();
 
-          const height = window.innerHeight;
-          const width = window.innerWidth;
-          const tinyImage = new Image(width, height);
+          const tinyImage = new Image();
           tinyImage.src = photo.tinyUrl();
           wallpaperElement.appendChild(tinyImage);
 
           fromEvent(tinyImage, 'load')
             .pipe(first(), takeUntil(this.destroy$))
             .subscribe(() => {
+              const rect = tinyImage.getBoundingClientRect();
+              const top = (window.innerHeight - rect.height) / 3;
+
+              tinyImage.style.top = `${top}px`;
               tinyImage.style.opacity = '1';
 
-              const largeImage = new Image(width, height);
+              const largeImage = new Image();
               largeImage.src = photo.largeUrl();
               wallpaperElement.appendChild(largeImage);
 
               fromEvent(largeImage, 'load')
                 .pipe(first(), takeUntil(this.destroy$))
-                .subscribe(() => largeImage.style.opacity = '1');
+                .subscribe(() => {
+                  const rect = largeImage.getBoundingClientRect();
+                  const top = (window.innerHeight - rect.height) / 3;
+
+                  largeImage.style.top = `${top}px`;
+                  largeImage.style.opacity = '1';
+                });
             });
         }
 
         async search(query: string, page: number) {
-          photoService.photoSource.params.query = query;
-          photoService.photoSource.params.page = page;
+          photoStock.query = query;
+          photoStock.page = page;
 
-          const data = await photoService.loadPhotos();
+          const photos = await photoStock.loadPhotos();
           this.page = page;
 
-          if (!data?.photos?.length) {
-            photoService.clearCache();
+          if (!photos?.length) {
+            photoStock.clearCache();
             return;
           }
 
-          return data.photos;
+          return photos;
         }
       }
     );
