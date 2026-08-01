@@ -1,37 +1,37 @@
 import path from 'path';
 import { defineConfig } from 'vite';
-import tsconfigPaths from 'vite-tsconfig-paths';
 
 export default defineConfig({
   mode: 'production',
-  root: path.resolve(__dirname, 'src'),
+  root: path.resolve(import.meta.dirname, 'src'),
   server: {
     port: 3000,
     watchOptions: {
       ignored: /node_modules/,
-      path: path.resolve(__dirname, 'src'),
+      path: path.resolve(import.meta.dirname, 'src'),
     }
   },
   build: {
     rollupOptions: {
       input: {
-        index: path.resolve(__dirname, 'src/index.html'),
+        index: path.resolve(import.meta.dirname, 'src/index.html'),
       },
     },
-    outDir: path.join(__dirname, 'dist'),
+    outDir: path.join(import.meta.dirname, 'dist'),
     emptyOutDir: true,
     assetsDir: '',
     sourcemap: process.env.NODE_ENV === 'development',
+  },
+  resolve: {
+    tsconfigPaths: true,
   },
   css: {
     preprocessorOptions: {
       scss: {
         api: 'modern-compiler',
-        loadPaths: [path.resolve(__dirname, 'src/styles')],
+        loadPaths: [path.resolve(import.meta.dirname, 'src')],
       },
     },
   },
-  plugins: [
-    tsconfigPaths(),
-  ]
+  plugins: []
 });
