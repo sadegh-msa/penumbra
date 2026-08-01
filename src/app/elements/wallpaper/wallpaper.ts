@@ -3,7 +3,7 @@ import { createTemplate } from '@app/utils/template.util';
 import templateString from '@elements/wallpaper/wallpaper.html?raw';
 import type { Photo, PhotoStock } from '@models/photo.model';
 import type { Photographer } from '@models/photographer.model';
-import { BehaviorSubject, filter, first, fromEvent, skip, Subject, takeUntil } from 'rxjs';
+import { BehaviorSubject, filter, first, fromEvent, Subject, skip, takeUntil } from 'rxjs';
 import styleString from './wallpaper.scss?inline';
 
 const template = createTemplate(templateString);
@@ -56,7 +56,7 @@ export default async function createWallpaperElement(photoStock: PhotoStock) {
                 let page = this.page;
 
                 if (index < 0) {
-                  if ((page - 1) < 0) {
+                  if (page - 1 < 0) {
                     page = 1;
                   } else {
                     --page;
@@ -114,8 +114,12 @@ export default async function createWallpaperElement(photoStock: PhotoStock) {
           this.destroy$.unsubscribe();
         }
 
-        attributeChangedCallback(attribute: string, oldValue: string, newValue: string) {
-          this.init$.pipe(filter(v => v), takeUntil(this.destroy$))
+        attributeChangedCallback(attribute: string, _oldValue: string, newValue: string) {
+          this.init$
+            .pipe(
+              filter(v => v),
+              takeUntil(this.destroy$)
+            )
             .subscribe(async () => {
               if (attribute === 'search' && newValue) {
                 this.searchQuery = fetchInput(this, newValue);

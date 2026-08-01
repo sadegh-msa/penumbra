@@ -45,8 +45,12 @@ export default async function createPaginatorElement() {
           this.destroy$.unsubscribe();
         }
 
-        attributeChangedCallback(attribute: string, oldValue: string, newValue: string) {
-          this.init$.pipe(filter(v => v), takeUntil(this.destroy$))
+        attributeChangedCallback(attribute: string, _oldValue: string, newValue: string) {
+          this.init$
+            .pipe(
+              filter(v => v),
+              takeUntil(this.destroy$)
+            )
             .subscribe(async () => {
               if (attribute === 'photographer' && newValue) {
                 const photographer$ = fetchInput<Subject<Photographer>>(this, newValue);
@@ -72,14 +76,12 @@ export default async function createPaginatorElement() {
 
         settlePhotographerHandler(photographer$: Subject<Photographer>) {
           this.photographerSub?.unsubscribe();
-          this.photographerSub = photographer$
-            .pipe(takeUntil(this.destroy$))
-            .subscribe(photographer => {
-              const element = this.photographerElement!;
-              element.href = photographer.url;
-              element.title = `Photographer: ${photographer.name}`;
-              element.querySelector('span')!.textContent = photographer.name;
-            });
+          this.photographerSub = photographer$.pipe(takeUntil(this.destroy$)).subscribe(photographer => {
+            const element = this.photographerElement!;
+            element.href = photographer.url;
+            element.title = `Photographer: ${photographer.name}`;
+            element.querySelector('span')!.textContent = photographer.name;
+          });
         }
       }
     );

@@ -1,5 +1,5 @@
 import { beforeEach, describe, expect, it } from 'bun:test';
-import { attachStyle, attachTemplate, fetchInput, injectChildrenInputs, INPUTS_FIELD } from './custom-element.util';
+import { attachStyle, attachTemplate, fetchInput, INPUTS_FIELD, injectChildrenInputs } from './custom-element.util';
 
 describe('Custom Element Utils', () => {
   let shadowRoot: ShadowRoot;

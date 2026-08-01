@@ -1,6 +1,6 @@
 import type { Observable } from 'rxjs';
 
-export type CustomHtmlElement = HTMLElement & { shadowRoot: ShadowRoot; };
+export type CustomHtmlElement = HTMLElement & { shadowRoot: ShadowRoot };
 
 export interface ElementInput {
   attribute: string;

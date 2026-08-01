@@ -8,7 +8,7 @@ export interface Photo {
 }
 
 export interface PhotoStock {
-  info: { name: string; label: string; url: string; };
+  info: { name: string; label: string; url: string };
   page: number;
   query: string;
   setParam: (param: string, value: boolean | number | string) => void;

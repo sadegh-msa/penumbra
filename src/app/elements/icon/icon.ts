@@ -35,8 +35,12 @@ export default async function createIconElement() {
           this.destroy$.unsubscribe();
         }
 
-        attributeChangedCallback(attribute: string, oldValue: string, newValue: string) {
-          this.init$.pipe(filter(v => v), takeUntil(this.destroy$))
+        attributeChangedCallback(attribute: string, _oldValue: string, newValue: string) {
+          this.init$
+            .pipe(
+              filter(v => v),
+              takeUntil(this.destroy$)
+            )
             .subscribe(async () => {
               if (attribute === 'icon' && newValue) {
                 const icon = fetchInput(this, newValue);
