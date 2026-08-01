@@ -4,6 +4,7 @@
   "author": "Mohammad Sadegh Athari",
   "description": "Replace new tab page with a personal dashboard featuring , desired pictures and inspirations.",
   "license": "MIT",
+  "packageManager": "bun@1.3.14",
   "scripts": {
     "lint": "biome check src",
     "format": "biome format src --write",
