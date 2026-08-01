@@ -1,9 +1,6 @@
 {
   "compilerOptions": {
     "allowJs": true,
-    "allowSyntheticDefaultImports": true,
-    "baseUrl": ".",
-    "declaration": true,
     "esModuleInterop": true,
     "experimentalDecorators": true,
     "forceConsistentCasingInFileNames": true,
@@ -13,8 +10,8 @@
       "dom",
       "dom.iterable"
     ],
-    "module": "es2022",
-    "moduleResolution": "node",
+    "module": "esnext",
+    "moduleResolution": "bundler",
     "noFallthroughCasesInSwitch": true,
     "noImplicitAny": false,
     "noImplicitReturns": true,
@@ -22,23 +19,21 @@
     "noUnusedParameters": true,
     "outDir": "./dist",
     "paths": {
-      "@elements/*": ["./src/app/elements/*"],
+      "@app/*": ["./src/app/*"],
       "@creators/*": ["./src/app/creators/*"],
       "@decorators/*": ["./src/app/decorators/*"],
+      "@elements/*": ["./src/app/elements/*"],
       "@helpers/*": ["./src/app/helpers/*"],
       "@interfaces/*": ["./src/app/interfaces/*"],
       "@models/*": ["./src/app/models/*"],
+      "@photo-stocks/*": ["./src/app/photo-stocks/*"],
       "@reactive/*": ["./src/app/reactive/*"],
-      "@services/*": ["./src/app/services/*"],
-      "@photo-stocks/*": ["src/app/photo-stocks/*"],
-      "@app/*": ["./src/app/*"],
+      "@services/*": ["./src/app/services/*"]
     },
     "rootDir": "./src",
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "strictFunctionTypes": true,
-    "strictNullChecks": true,
     "strictPropertyInitialization": false,
     "target": "es2022",
     "types": [
