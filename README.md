@@ -1,6 +1,6 @@
 # Penumbra
 
-Replace the new tab of Firefox/Chrome with a personal dashboard featuring, desired pictures and inspirations.
+Replace the new tab of Firefox/Chrome with a personal dashboard featuring desired pictures and inspirations.
 
 ## Development
 
@@ -11,10 +11,10 @@ bun install
 bun run build
 ```
 ### Firefox
-To develop and test this plugin on Firefox, inside of address bar go to
+To develop and test this plugin on Firefox, in the address bar go to
 ```about:debugging#/runtime/this-firefox```
-Click on `Load Temporary Add-on` and choose `dist/legacy/firefox/manifest.json` file, now you can inspect, test, and reload the plugin.
+Click on `Load Temporary Add-on` and choose the `dist/legacy/firefox/manifest.json` file. Now you can inspect, test, and reload the plugin.
 ### Google Chrome
-To develop and test this plugin on Google Chrome, inside of address bar go to
+To develop and test this plugin on Google Chrome, in the address bar go to
 ```chrome://extensions```
-Click on `Load unpacked` and choose `dist/legacy/chrome/manifest.json` file, now you can see the details, errors and test the extention.
+Click on `Load unpacked` and choose the `dist/legacy/chrome/manifest.json` file. Now you can see the details, errors, and test the extension.
