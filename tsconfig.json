@@ -6,7 +6,7 @@
     "forceConsistentCasingInFileNames": true,
     "importHelpers": true,
     "lib": [
-      "es2022",
+      "esnext",
       "dom",
       "dom.iterable"
     ],
@@ -36,7 +36,7 @@
     "sourceMap": true,
     "strict": true,
     "strictPropertyInitialization": false,
-    "target": "es2022",
+    "target": "esnext",
     "types": [
       "node",
       "bun"
